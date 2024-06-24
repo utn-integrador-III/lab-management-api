@@ -1,0 +1,308 @@
+#This is the header of the file, whose main goal is to display important information
+#about the .yml file.
+swagger: "2.0"
+info:
+  description: "Stuedent Service API's Documentation"
+  version: "1.0.0"
+  title: "Swagger Student Service API"
+  termsOfService: "Terms"
+  contact:
+    email: "ebarahona@utn.ac.cr"
+host: "localhost:5001"
+basePath: "/booking_api"
+#The tags are the identifiers for the paths that are created, this will assign a path with a unique tag,
+#meaning that, an specific end-point belongs to a tag or identifier
+tags:
+  - name: "Labs"
+    description: "All Lab's Endpoints"
+#the schemes will define the protocol that are been used by the end-points inside the API
+schemes:
+  - "https"
+  - "http"
+#The definitions will display the information that the end-points will return, all along with the
+#corresponding messages of the errors.
+definitions:
+  Response:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: "#/definitions"
+      message:
+        type: string
+        example: "Successfully requested"
+      message_code:
+        type: string
+        example: "OK_MSG"
+  ErrorResponse:
+    type: object
+    properties:
+      data:
+        type: string
+        example: null
+      message:
+        type: string
+      message_code:
+        type: string
+  InvalidIdErrorResponse:
+    type: object
+    properties:
+      data:
+        type: string
+        example: null
+      message:
+        type: string
+        example: "Invalid Id"
+      message_code:
+        type: string
+        example: "INVALID_ID"
+  InternalErrorResponse:
+    type: object
+    properties:
+      data:
+        type: string
+        example: null
+      message:
+        type: string
+        example: "Internal server error"
+      message_code:
+        type: string
+        example: "INTERNAL_SERVER_ERROR_MSG"
+  LabGet:
+    type: object
+    properties:
+      _id:
+        type: string
+        example: "0183IEHU#&#J"
+      LabID:
+        type: integer
+        example: 34
+      name:
+        type: string
+        example: "Laboratories"
+      description:
+        type: string
+        example: Laboratories Lab
+  LabGetById:
+    type: object
+    properties:
+      _id:
+        type: integer
+        example: 34
+      name:
+        type: string
+        example: "Laboratories"
+  LabPost:
+    type: object
+    required:
+      - "name"
+    properties:
+      name:
+        type: string
+        example: "Laboratories"
+      description:
+        type: string
+        example: "Laboratories Lab"
+#The paths are the ones with all the information of the CRUD methods of the end-points
+paths:
+  /Lab:
+    get:
+      tags:
+        - "Labs"
+      summary: "Get list of all Labs"
+      description: "Get list of all Labs"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "A list of countries"
+          schema:
+            $ref: "#/definitions/LabGet"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+    post:
+      tags:
+        - "Labs"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Lab object that needs to be added"
+          required: true
+          schema:
+            $ref: "#/definitions/LabPost"
+      summary: "Create a Lab"
+      description: "Create a Lab"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "201":
+          description: "Lab succesfully created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/LabGet"
+                  message:
+                    example: "Country successfully created"
+                  message_code:
+                    example: "COUNTRY_SUCCESSFULLY_CREATED"
+        "409":
+          description: "Lab already exists"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Lab aready exist"
+                  message_code:
+                    example: "Lab_ALREADY_EXIST"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+    put:
+        tags:
+          - "Labs"
+        parameters:
+          - in: "body"
+            name: "body"
+            description: "Lab object that needs to be updated"
+            required: true
+            schema:
+              $ref: "#/definitions/LabGetById"
+        summary: "Update a Lab"
+        description: "Update a Lab"
+        consumes:
+          - "application/json"
+        produces:
+          - "application/json"
+        responses:
+          "200":
+            description: "An updated Lab"
+            schema:
+              allOf:
+                - $ref: "#/definitions/Response"
+                - properties:
+                    data:
+                      $ref: "#/definitions/LabGet"
+                    message:
+                      example: "Lab successfully updated"
+                    message_code:
+                      example: "Lab_SUCCESSFULLY_UPDATED"
+          "500":
+            description: "Internal Server Error"
+            schema:
+              $ref: "#/definitions/InternalErrorResponse"
+
+          "422":
+            description: "Invalid Id"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "Invalid Id"
+                    message_code:
+                      example: "INVALID_ID"
+  /Lab/{LabId}:
+    get:
+      tags:
+        - "Labs"
+      summary: "Find Lab by ID"
+      description: "Returns a single Lab"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "LabId"
+          in: "path"
+          description: "ID of Lab to return"
+          required: true
+          type: "integer"
+          format: "integer"
+      responses:
+        "200":
+          description: "Get single Lab successfully"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/LabGet"
+        "404":
+          description: "Lab not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Lab not found"
+                  message_code:
+                    example: "Lab_ITEM_NOT_FOUND"
+        "422":
+          description: "Invalid Object Id"
+          schema:
+            $ref: "#/definitions/InvalidIdErrorResponse"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+    delete:
+      tags:
+        - "Labs"
+      summary: "Delete Lab by ID"
+      description: "Returns a deleted Lab"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "LabId"
+          in: "path"
+          description: "ID of Lab to delete"
+          required: true
+          type: "integer"
+          format: "integer"
+      responses:
+        "200":
+          description: "Lab successfully deleted"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/LabGet"
+                  message:
+                    example: "Lab successfully deleted"
+                  message_code:
+                    example: "Lab_SUCCESSFULLY_DELETED"
+        "404":
+          description: "Country not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Lab not found"
+                  message_code:
+                    example: "Lab_ITEM_NOT_FOUND"
+        "422":
+          description: "Invalid Object Id"
+          schema:
+            $ref: "#/definitions/InvalidIdErrorResponse"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
