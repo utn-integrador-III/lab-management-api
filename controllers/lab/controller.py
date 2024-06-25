@@ -15,7 +15,8 @@ class LabController(Resource):
     """
     def get(self):
         try:
-            labs=None
+            labs = LabModel.get_all()
+
 
             return ServerResponse(data=labs, status=StatusCode.OK)
         except Exception as ex:
