@@ -24,7 +24,7 @@ class LabController(Resource):
                     status= StatusCode.INTERNAL_SERVER_ERROR,
                 )
             
-            if not labs:  # If there are no zones
+            if not labs:  # If there are no lab
                 return ServerResponse(
                     data={},
                     message="No labs found",
@@ -120,8 +120,8 @@ class LabController(Resource):
                 )
 
             # Check if the labs exists by ID
-            zone = LabModel.get_by_id(id)
-            if not zone:
+            lab = LabModel.get_by_id(id)
+            if not lab:
                 return ServerResponse(
                     message="lab does not exist",
                     message_code=LAB_NOT_FOUND,
@@ -129,8 +129,8 @@ class LabController(Resource):
                 )
 
             # Update labs
-            updated_zone = LabModel.update(id, update_data)
-            if not updated_zone:
+            updated_lab = LabModel.update(id, update_data)
+            if not updated_lab:
                 return ServerResponse(
                     message="An error occurred while updating the lab",
                     message_code=INTERNAL_SERVER_ERROR_MSG,
@@ -138,11 +138,11 @@ class LabController(Resource):
                 )
 
             # Convert ObjectId to string if it exists in the updated labs
-            updated_zone["_id"] = str(updated_zone["_id"]) if "_id" in updated_zone else None
+            updated_lab["_id"] = str(updated_lab["_id"]) if "_id" in updated_lab else None
 
             # Successful response
             return ServerResponse(
-                data=updated_zone,
+                data=updated_lab,
                 message="Lab successfully updated",
                 message_code=LAB_SUCCESSFULLY_UPDATED,
                 status=StatusCode.OK,

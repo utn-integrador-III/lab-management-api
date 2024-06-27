@@ -20,14 +20,14 @@ class LabByIdController(Resource):
                 result["_id"] = str(result["_id"]) if "_id" in result else None
                 return ServerResponse(
                     data=result,
-                    message="Zone found",
+                    message="labs found",
                     message_code=OK_MSG,
                     status=StatusCode.OK,
                 )
             else:
                 return ServerResponse(
                     data={},
-                    message="Zone does not exist",
+                    message="labs does not exist",
                     message_code=NO_DATA,
                     status=StatusCode.OK,
                 )
@@ -36,13 +36,13 @@ class LabByIdController(Resource):
             logging.error(f"Invalid ObjectId: {ex}")
             return ServerResponse(
                 data={},
-                message="Invalid zone ID",
+                message="Invalid lab ID",
                 message_code=INVALID_ID,
                 status=StatusCode.BAD_REQUEST,
             )
 
         except Exception as ex:
-            logging.error(f"Error getting zone by id: {ex}")
+            logging.error(f"Error getting lab by id: {ex}")
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
 
  
