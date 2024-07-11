@@ -303,6 +303,46 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+
+/professor_info:
+    get:
+      tags:
+        - "Professors"
+      summary: "Get all professor information"
+      description: "Get all professor information"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "A list of professor information"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/ProfessorInfoGet"
+                  message:
+                    example: "Successfully retrieved"
+                  message_code:
+                    example: "OK_MSG"
+        "400":
+          description: "No professor information found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "No professor information found"
+                  message_code:
+                    example: "NO_DATA"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+            
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
