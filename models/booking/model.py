@@ -24,6 +24,19 @@ class BookingModel:
             "career": self.career,
             "subject": self.subject,
             "lab": self.lab,
+            "end_time": self.end_time,
+            "start_time": self.start_time,
+            "students": self.students,
+            "observations": self.observations,
+        }
+
+    def to_json(self):
+        return {
+            "professor": self.professor,
+            "professor_email": self.professor_email,
+            "career": self.career,
+            "subject": self.subject,
+            "lab": self.lab,
             "end_time": self.end_time.isoformat() if self.end_time else None,
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "students": self.students,
@@ -33,42 +46,28 @@ class BookingModel:
     @classmethod
     def create(cls, data):
         try:
-            if "end_time" in data:
+            if "end_time" in data and isinstance(data["end_time"], str):
                 data["end_time"] = cls._parse_datetime(data["end_time"])
-            if "start_time" in data:
+            if "start_time" in data and isinstance(data["start_time"], str):
                 data["start_time"] = cls._parse_datetime(data["start_time"])
 
-            existing_booking = __dbmanager__.find_data({
-                "professor_email": data["professor_email"],
-                "career.career_id": data["career"]["career_id"],
-                "subject.subject_id": data["subject"]["subject_id"],
-                "lab": data["lab"],
-                "start_time": data["start_time"]
-            })
-
-            if existing_booking:
-                for booking in existing_booking:
-                    if (booking["professor_email"] == data["professor_email"] and
-                        booking["career"]["career_id"] == data["career"]["career_id"] and
-                        booking["subject"]["subject_id"] == data["subject"]["subject_id"] and
-                        booking["lab"] == data["lab"] and
-                        booking["start_time"] == data["start_time"]):
-                        return ServerResponse(
-                            message="BOOKING_ALREADY_EXIST",
-                            message_code=BOOKING_ALREADY_EXIST,
-                            status=StatusCode.CONFLICT,
-                        )
-            
             booking = BookingModel(**data)
             __dbmanager__.create_data(booking.to_dict())
-            return ServerResponse(booking.to_dict(), message="Booking successfully created", message_code=BOOKING_SUCCESSFULLY_CREATED, status=StatusCode.CREATED)
+            return booking
         except Exception as ex:
             logging.exception(ex)
-            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+            raise Exception("Failed to create booking: " + str(ex))
 
     @staticmethod
     def _parse_datetime(date_str):
-        naive_datetime = datetime.fromisoformat(date_str)
+        # Parse the string to a datetime object
+        parsed_datetime = datetime.fromisoformat(date_str)
         costa_rica_tz = pytz.timezone('America/Costa_Rica')
-        localized_datetime = costa_rica_tz.localize(naive_datetime)
+
+        # If the datetime is naive, localize it; otherwise, convert it to the desired time zone
+        if parsed_datetime.tzinfo is None:
+            localized_datetime = costa_rica_tz.localize(parsed_datetime)
+        else:
+            localized_datetime = parsed_datetime.astimezone(costa_rica_tz)
+        
         return localized_datetime

@@ -3,10 +3,8 @@ from flask import request
 from utils.server_response import *
 from utils.message_codes import *
 from models.booking.model import BookingModel
-from controllers.booking.parser import query_parser_post
 import logging
 import re
-from bson.errors import InvalidId
 
 class BookingController(Resource):
     route = "/book"
@@ -74,12 +72,9 @@ class BookingController(Resource):
                     status=StatusCode.BAD_REQUEST,
                 )
             
-           
             booking = BookingModel.create(data)
-            return ServerResponse(booking.to_dict(), message="Booking successfully created", 
+            return ServerResponse(booking.to_json(), message="Booking successfully created", 
                                   message_code=BOOKING_SUCCESSFULLY_CREATED, status=StatusCode.CREATED)
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
-
-        
