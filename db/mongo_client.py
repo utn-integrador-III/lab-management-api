@@ -40,6 +40,7 @@ class Connection:
 
     def create_data(self, data):
         try:
+            print(data)
             return self.collection.insert_one(data)
         except Exception as e:
             return e
