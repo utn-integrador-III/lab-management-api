@@ -36,3 +36,7 @@ LAB_ALREADY_EXIST = "LAB_ALREADY_EXIST"  # LAB already exist from database
 LAB_NAME_REQUIRED = "LAB_NAME_REQUIRED"  # Requerid LAB name
 LAB_NUM_REQUIRED = "LAB_NUM_REQUIRED"  # Requerid LAB Num
 LAB_COMPUTERS_REQUIRED = "LAB_COMPUTERS_REQUIRED"  # Requerid Computers in Lab
+
+# Professor Validations Messages
+PROFESSOR_EMAIL_REQUIRED = "PROFESSOR_EMAIL_REQUIRED" # Requerid Professor Email 
+PROFESSOR_NOT_FOUND = "PROFESSOR_NOT_FOUND" # Professor not found
