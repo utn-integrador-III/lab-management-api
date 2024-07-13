@@ -16,7 +16,3 @@ def addServiceLayer(api: Api):
 
     api.add_resource(BookingController, BookingController.route)
 
-
-    # Booking
-    api.add_resource(BookingController, BookingController.route)
-

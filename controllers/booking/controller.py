@@ -155,7 +155,7 @@ class BookingController(Resource):
                 message=f"An unexpected error occurred: {str(ex)}",
                 message_code=INTERNAL_SERVER_ERROR_MSG,
                 status=StatusCode.INTERNAL_SERVER_ERROR,
-
+            )
 from models.booking.model import BookingModel
 import logging
 
