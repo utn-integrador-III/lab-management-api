@@ -2,7 +2,7 @@
 #about the .yml file.
 swagger: "2.0"
 info:
-  description: "Student Service API's Documentation"
+  description: "Stuedent Service API's Documentation"
   version: "1.0.0"
   title: "Swagger Student Service API"
   termsOfService: "Terms"
@@ -10,12 +10,17 @@ info:
     email: "ebarahona@utn.ac.cr"
 host: "localhost:5001"
 basePath: "/booking_api"
+#The tags are the identifiers for the paths that are created, this will assign a path with a unique tag,
+#meaning that, an specific end-point belongs to a tag or identifier
 tags:
   - name: "Labs"
     description: "All Lab's Endpoints"
+#the schemes will define the protocol that are been used by the end-points inside the API
 schemes:
   - "https"
   - "http"
+#The definitions will display the information that the end-points will return, all along with the
+#corresponding messages of the errors.
 definitions:
   Response:
     type: object
@@ -23,7 +28,7 @@ definitions:
       data:
         type: array
         items:
-          $ref: "#/definitions/LabGet"
+          $ref: "#/definitions"
       message:
         type: string
         example: "Successfully requested"
@@ -99,30 +104,7 @@ definitions:
       description:
         type: string
         example: "Laboratories Lab"
-  UpdateBooking:
-    type: object
-    required:
-      - "lab_book_id"
-      - "student_email"
-      - "student_name"
-      - "computer"
-      - "usage_time"
-    properties:
-      lab_book_id:
-        type: string
-        example: "66882fc47495a27748ac7bb8"
-      student_email:
-        type: string
-        example: "alejandro@est.utn.ac.cr"
-      student_name:
-        type: string
-        example: "Alejandro Jose Rodríguez Jaen"
-      computer:
-        type: string
-        example: "pc-11"
-      usage_time:
-        type: string
-        example: "7185578000001"
+#The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
     get:
@@ -161,7 +143,7 @@ paths:
         - "application/json"
       responses:
         "201":
-          description: "Lab successfully created"
+          description: "Lab succesfully created"
           schema:
             allOf:
               - $ref: "#/definitions/Response"
@@ -169,9 +151,9 @@ paths:
                   data:
                     $ref: "#/definitions/LabGet"
                   message:
-                    example: "Lab successfully created"
+                    example: "Country successfully created"
                   message_code:
-                    example: "LAB_SUCCESSFULLY_CREATED"
+                    example: "COUNTRY_SUCCESSFULLY_CREATED"
         "409":
           description: "Lab already exists"
           schema:
@@ -179,101 +161,58 @@ paths:
               - $ref: "#/definitions/ErrorResponse"
               - properties:
                   message:
-                    example: "Lab already exists"
+                    example: "Lab aready exist"
                   message_code:
-                    example: "LAB_ALREADY_EXIST"
+                    example: "Lab_ALREADY_EXIST"
         "500":
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
     put:
-      tags:
-        - "Labs"
-      summary: "Update a lab booking with new student information"
-      description: "This endpoint updates a lab booking by adding a new student with the provided information."
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Lab booking update data"
-          required: true
-          schema:
-            $ref: "#/definitions/UpdateBooking"
-      responses:
-        "200":
-          description: "Computer booked successfully"
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  $ref: "#/definitions/UpdateBooking"
-              message:
-                type: string
-                example: "Computer booked successfully"
-              message_code:
-                type: string
-                example: "LAB_SUCCESSFULLY_UPDATED"
-        "400":
-          description: "Validation Error"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Invalid update data: missing key 'computer'"
-              message_code:
-                type: string
-                example: "INCORRECT_REQUEST_PARAM"
-        "404":
-          description: "Lab book not found"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Lab book not found"
-              message_code:
-                type: string
-                example: "LAB_NOT_FOUND"
-        "409":
-          description: "Computer already booked"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Computer already booked"
-              message_code:
-                type: string
-                example: "CONFLICT_MSG"
-        "500":
-          description: "Internal Server Error"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Error retrieving lab book: Invalid ObjectId: 66882fc47495a27748ac7b"
-              message_code:
-                type: string
-                example: "INTERNAL_SERVER_ERROR_MSG"
+        tags:
+          - "Labs"
+        parameters:
+          - in: "body"
+            name: "body"
+            description: "Lab object that needs to be updated"
+            required: true
+            schema:
+              $ref: "#/definitions/LabGetById"
+        summary: "Update a Lab"
+        description: "Update a Lab"
+        consumes:
+          - "application/json"
+        produces:
+          - "application/json"
+        responses:
+          "200":
+            description: "An updated Lab"
+            schema:
+              allOf:
+                - $ref: "#/definitions/Response"
+                - properties:
+                    data:
+                      $ref: "#/definitions/LabGet"
+                    message:
+                      example: "Lab successfully updated"
+                    message_code:
+                      example: "Lab_SUCCESSFULLY_UPDATED"
+          "500":
+            description: "Internal Server Error"
+            schema:
+              $ref: "#/definitions/InternalErrorResponse"
+
+          "422":
+            description: "Invalid Id"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "Invalid Id"
+                    message_code:
+                      example: "INVALID_ID"
+  /Lab/{LabId}:
     get:
       tags:
         - "Labs"
@@ -308,7 +247,7 @@ paths:
                   message:
                     example: "Lab not found"
                   message_code:
-                    example: "LAB_ITEM_NOT_FOUND"
+                    example: "Lab_ITEM_NOT_FOUND"
         "422":
           description: "Invalid Object Id"
           schema:
@@ -345,9 +284,9 @@ paths:
                   message:
                     example: "Lab successfully deleted"
                   message_code:
-                    example: "LAB_SUCCESSFULLY_DELETED"
+                    example: "Lab_SUCCESSFULLY_DELETED"
         "404":
-          description: "Lab not found"
+          description: "Country not found"
           schema:
             allOf:
               - $ref: "#/definitions/ErrorResponse"
@@ -355,7 +294,7 @@ paths:
                   message:
                     example: "Lab not found"
                   message_code:
-                    example: "LAB_ITEM_NOT_FOUND"
+                    example: "Lab_ITEM_NOT_FOUND"
         "422":
           description: "Invalid Object Id"
           schema:
