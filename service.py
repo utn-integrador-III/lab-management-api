@@ -4,6 +4,7 @@ from controllers.issue.controller import IssueController
 from controllers.lab.controller import LabController
 from controllers.labbyId.controller import LabByIdController
 from controllers.booking.controller import BookingController
+from controllers.bookingComputer.controller import BookingComputerController
 from flask_restful import Api
 from controllers.professor.controller import ProfessorController
 
@@ -21,6 +22,7 @@ def addServiceLayer(api: Api):
 
     # Booking
     api.add_resource(BookingController, BookingController.route)
+    api.add_resource(BookingComputerController, BookingComputerController.route)
 
     #Issue
     api.add_resource(IssueController, IssueController.route)
