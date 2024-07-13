@@ -11,4 +11,3 @@ def find_by_id(lab_id):
 
 def update(lab_id, update_data):
     return __dbmanager__.collection.update_one({'_id': ObjectId(lab_id)}, {'$set': update_data})
-
