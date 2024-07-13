@@ -3,7 +3,6 @@ from swagger_ui import flask_api_doc
 from flask_restful import Api
 from flask_cors import CORS
 from decouple import config
-from controllers.professor.controller import ProfessorController
 from service import addServiceLayer
 
 app = Flask(__name__)
