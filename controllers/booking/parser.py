@@ -1,6 +1,5 @@
 from flask_restful import reqparse
 
-
 def query_parser_post():
     parser = reqparse.RequestParser()
     parser.add_argument('professor', type=str, required=True, help="This field cannot be blank")

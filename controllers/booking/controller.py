@@ -7,7 +7,7 @@ import logging
 import re
 
 class BookingController(Resource):
-    route = "/book"
+    route = "/booking"
 
     """
     Create a new booking 
@@ -78,3 +78,4 @@ class BookingController(Resource):
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
