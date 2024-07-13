@@ -1,3 +1,5 @@
+# utils/message_codes.py
+
 """
 This file defines the message codes for multilanguage in the frontend
 Using i18n standard, please check multilanguage folder to add or modify messages
@@ -13,8 +15,10 @@ UNPROCESSABLE_ENTITY_MSG = "UNPROCESSABLE_ENTITY_MSG"
 INTERNAL_SERVER_ERROR_MSG = "INTERNAL_SERVER_ERROR_MSG"
 SERVER_TIMEOUT_MSG = "SERVER_TIMEOUT_MSG"
 NO_DATA = "NO_DATA"
+ERROR_MSG = "ERROR_MSG"  # Añadir ERROR_MSG aquí
+SUCCESS_MSG = "SUCCESS_MSG"  # Añadir SUCCESS_MSG aquí
 
-INCORRECT_REQUEST_PARAM='INCORRECT_REQUEST_PARAM'
+INCORRECT_REQUEST_PARAM = 'INCORRECT_REQUEST_PARAM'
 
 # Common Validations Messages
 INVALID_ID = "INVALID_ID"  # Invalid Id
@@ -32,6 +36,3 @@ LAB_ALREADY_EXIST = "LAB_ALREADY_EXIST"  # LAB already exist from database
 LAB_NAME_REQUIRED = "LAB_NAME_REQUIRED"  # Requerid LAB name
 LAB_NUM_REQUIRED = "LAB_NUM_REQUIRED"  # Requerid LAB Num
 LAB_COMPUTERS_REQUIRED = "LAB_COMPUTERS_REQUIRED"  # Requerid Computers in Lab
-
-
-
