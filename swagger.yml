@@ -104,6 +104,17 @@ definitions:
       description:
         type: string
         example: "Laboratories Lab"
+  ProfessorInfoGet:
+    type: object
+    properties:
+      _id:
+        type: integer
+      name:
+        type: string
+        example: "Professors"
+      description:
+        type: string
+        example: Professors info
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
@@ -304,7 +315,7 @@ paths:
           schema:
             $ref: "#/definitions/InternalErrorResponse"
 
-/professor_info:
+  /professor_info:
     get:
       tags:
         - "Professors"
