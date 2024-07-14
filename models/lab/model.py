@@ -4,21 +4,23 @@ from bson.errors import InvalidId  # Import InvalidId class
 
 from models.lab.db_queries import __dbmanager__
 import logging
-
+from .db_queries import Connection 
 
 class LabModel:
+
+    __dbmanager__ = Connection("lab_book")
 
     def __init__(self, lab_name=None, lab_num=None, _id=None, computers=None):
         self.lab_name = lab_name
         self.lab_num = lab_num
         self._id = _id
-        self.computers=computers
+        self.computers = computers
 
     def to_dict(self):
         return {
             "lab_name": self.lab_name,
             "lab_num": self.lab_num,
-            "computers": self.computers
+            "computers": self.computers,
         }
 
     # @classmethod
@@ -76,29 +78,38 @@ class LabModel:
 
     @classmethod
     def get_by_id(cls, id):
+        return None
+
+    @classmethod
+    def update(cls, id, update_data):
+        return None
         try:
-            # Ensure the id is a valid ObjectId
+            logging.info(f"Attempting to get lab book with id: {id}")
             if not ObjectId.is_valid(id):
+                logging.warning(f"Invalid ObjectId: {id}")
                 raise InvalidId(f"Invalid ObjectId: {id}")
-            return __dbmanager__.get_by_id(id)
+            result = cls.__dbmanager__.get_by_id(id)
+            logging.info(f"Result of get_by_id: {result}")
+            return result
         except InvalidId as ex:
-            raise ex  # Re-raise InvalidId to handle it specifically in the get method
+            logging.error(f"InvalidId error: {ex}")
+            raise ex
         except Exception as ex:
-            raise Exception(f"Error fetching zone by id {id}: {ex}")
+            logging.error(f"Unexpected error in get_by_id: {ex}", exc_info=True)
+            raise Exception(f"Error fetching lab by id {id}: {ex}")
+
         
     
     @classmethod
-    def update(cls, id, update_data):
-        if not isinstance(id, str) or not ObjectId.is_valid(id):
-            raise ValueError("Invalid id value")
-
-        id = ObjectId(id)
-        result = __dbmanager__.update_data(id, update_data)
-        if result:
-            updated_zone = cls.get_by_id(str(id))
-            return updated_zone
-        else:
-            return None
-        
+    def update(cls, lab_book_id, update_data):
+        try:
+            logging.info(f"Attempting to update lab book with id: {lab_book_id}")
+            logging.info(f"Update data: {update_data}")
+            result = cls.__dbmanager__.update_data(lab_book_id, update_data)
+            logging.info(f"Update result: {result}")
+            return result
+        except Exception as ex:
+            logging.error(f"Error updating lab book: {ex}", exc_info=True)
+            return False
 
 
