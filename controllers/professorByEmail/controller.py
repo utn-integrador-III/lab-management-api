@@ -4,11 +4,11 @@ from flask import request
 from utils.server_response import *
 from utils.message_codes import *
 import logging
-from models.professor.model import ProfessorModel
+from models.professor_info.model import ProfessorInfoModel
 from flask import request
 
-class ProfessorController(Resource):
-    route = "/professor"
+class ProfessorByEmailController(Resource):
+    route = "/professor/byemail"
 
     def get(self):
         try:
@@ -20,7 +20,7 @@ class ProfessorController(Resource):
                     status=StatusCode.BAD_REQUEST
                 )
 
-            professor = ProfessorModel.get_by_email(professor_email)
+            professor = ProfessorInfoModel.get_by_email(professor_email)
             if not professor:
                 logging.error(f"Professor not found for email: {professor_email}")
                 return ServerResponse(
