@@ -1,4 +1,4 @@
 from db.mongo_client import Connection
 from decouple import config
 
-__dbmanager__ = Connection(config('PROFESOR_COLLECTION'))
+__dbmanager__ = Connection(config('PROFESSOR_INFO_COLLECTION'))

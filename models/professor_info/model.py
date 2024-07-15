@@ -1,8 +1,7 @@
-# models/professor_model.py
 import logging
-from models.professor.db_queries import __dbmanager__
+from models.professor_info.db_queries import __dbmanager__
 
-class ProfessorModel:
+class ProfessorInfoModel:
     def __init__(self, professor_name=None, professor_email=None, career=None, subjects=None, _id=None):
         self.professor_name = professor_name
         self.professor_email = professor_email
