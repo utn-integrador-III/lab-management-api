@@ -108,13 +108,39 @@ definitions:
     type: object
     properties:
       _id:
-        type: integer
-      name:
         type: string
-        example: "Professors"
-      description:
+        example: 7619ajbamami91
+      professor_email:
         type: string
-        example: Professors info
+        example: "ebarahona@utn.ac.cr"
+      professor_name:
+        type: string
+        example: "Ever Barahona Mendoza"
+      career:
+        type: object
+        properties:
+          career_id:
+            type: string
+            example: "ITI"
+          career_name:
+            type: string
+            example: "Tecnologia de la Informacion"
+      subject:
+        type: array
+        items:
+          type: object
+          properties:
+            subject_id:
+              type: string
+            subject_name:
+              type: string
+        example:
+        - subject_id: "ITI-123"
+          subject_name: "Fundamentos de Base de Datos"
+        - subject_id: "ITI-412"
+          subject_name: "Ingenieria de Requerimientos y Modelado de SW"
+
+
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
