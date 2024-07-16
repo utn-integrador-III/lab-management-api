@@ -4,12 +4,9 @@ from bson.errors import InvalidId  # Import InvalidId class
 
 from models.lab.db_queries import __dbmanager__
 import logging
-from .db_queries import Connection
 
 
 class LabModel:
-
-    __dbmanager__ = Connection("lab_book")
 
     def __init__(self, lab_name=None, lab_num=None, _id=None, computers=None):
         self.lab_name = lab_name
