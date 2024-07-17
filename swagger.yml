@@ -104,6 +104,36 @@ definitions:
       description:
         type: string
         example: "Laboratories Lab"
+  ProfessorGetByEmail:
+    type: object
+    properties:
+      data:
+        properties:
+          professor_name:
+            type: string
+            example: "Juan Luis Bravo"
+          professor_email:
+            type: string
+            example: "juanluis@utn.ac.cr"
+          CareerId:
+            type: string
+            example: "ITI"
+          Career:
+            type: string
+            example: "Tecnologia de la Informacion"
+          Courses:
+            type: "array"
+            items:
+              type: object
+              properties:
+                course_id:
+                  type: string
+                  example: "ITI-201"
+                course_name:
+                  type: "string"
+                  example: "Matematica discreta"
+
+
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
@@ -299,6 +329,59 @@ paths:
           description: "Invalid Object Id"
           schema:
             $ref: "#/definitions/InvalidIdErrorResponse"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+            
+  /professor/byemail:
+    get:
+      tags:
+        - "Professors"
+      summary: "Get professor information by email"
+      description: "Returns the information of a professor based on their email address"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "professor_email"
+          in: "query"
+          description: "Email address of the professor"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/ProfessorGetByEmail"
+            
+        "400":
+          description: "Bad Request - Professor email parameter is required"
+          schema:
+            type: "object"
+            properties:
+              data:
+                type: "string"
+                example: null
+              message:
+                type: "string"
+                example: "Professor email required"
+              message_code:
+                type: "string"
+                example: "PROFESSOR_EMAIL_REQUIRED"
+        "404":
+          description: "Not Found - Professor not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Professor not found"
+                  message_code:
+                    example: "PROFESSOR_NOT_FOUND"
         "500":
           description: "Internal Server Error"
           schema:
