@@ -2,19 +2,21 @@
 #about the .yml file.
 swagger: "2.0"
 info:
-  description: "Stuedent Service API's Documentation"
+  description: "Lab-Management API's Documentation"
   version: "1.0.0"
-  title: "Swagger Student Service API"
+  title: "Swagger Lab-Management API"
   termsOfService: "Terms"
   contact:
     email: "ebarahona@utn.ac.cr"
-host: "localhost:5001"
+host: "localhost:5003"
 basePath: "/booking_api"
 #The tags are the identifiers for the paths that are created, this will assign a path with a unique tag,
 #meaning that, an specific end-point belongs to a tag or identifier
 tags:
   - name: "Labs"
     description: "All Lab's Endpoints"
+  - name: "Bookings"
+    description: "All Booking's Endpoints"
 #the schemes will define the protocol that are been used by the end-points inside the API
 schemes:
   - "https"
@@ -22,6 +24,24 @@ schemes:
 #The definitions will display the information that the end-points will return, all along with the
 #corresponding messages of the errors.
 definitions:
+  careerResponse:
+    type: object
+    properties:
+      career_id:
+        type: string
+        example: "ITI"
+      career_name:
+        type: string
+        example: "Tecnologia de la Informacion"
+  subjectResponse:
+    type: object
+    properties:
+      subject_id:
+        type: string
+        example: "ITI-412"
+      subject_name:
+        type: string
+        example: "Metodología Agiles de Desarrollo de Software"
   Response:
     type: object
     properties:
@@ -104,6 +124,80 @@ definitions:
       description:
         type: string
         example: "Laboratories Lab"
+  BookingGet:
+    type: object
+    properties:
+      professor:
+        type: string
+        example: "Ever Barahona Mendoza"
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      career:
+        type: array
+        items:
+          $ref: "#/definitions/careerResponse"
+      subject:
+        type: array
+        items:
+          $ref: "#/definitions/subjectResponse"
+      lab:
+        type: integer
+        example: 412
+      end_time:
+        type: string
+        example: "2024-07-11T21:00:00-06:00"
+      start_time:
+        type: string
+        example: "2024-07-11T17:00:00-06:00"
+      students:
+        type: array
+        items:
+          type: string
+      observations:
+        type: string
+        example: ""
+  BookingPost:
+    type: object
+    required:
+      - "professor"
+      - "professor_email"
+      - "career"
+      - "subject"
+      - "lab"
+      - "end_time"
+      - "start_time"
+    properties:
+      professor:
+        type: string
+        example: "Ever Barahona Mendoza"
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      career:
+        type: array
+        items:
+          $ref: "#/definitions/careerResponse"
+      subject:
+        type: array
+        items:
+          $ref: "#/definitions/subjectResponse"
+      lab:
+        type: integer
+        example: 412
+      end_time:
+        type: string
+        example: "2024-07-11T21:00:00-06:00"
+      start_time:
+        type: string
+        example: "2024-07-11T17:00:00-06:00"
+      students:
+        type: array
+        items:
+          type: string
+      observations:
+        type: string
+        example: ""
   ProfessorGetByEmail:
     type: object
     properties:
@@ -333,7 +427,50 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-            
+  /booking:
+    post:
+      tags:
+        - "Bookings"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Booking object that needs to be added"
+          required: true
+          schema:
+            $ref: "#/definitions/BookingPost"
+      summary: "Create a Booking"
+      description: "Create a Booking"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "201":
+          description: "Booking succesfully created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/BookingGet"
+                  message:
+                    example: "Booking successfully created"
+                  message_code:
+                    example: "BOOKING_SUCCESSFULLY_CREATED"
+        "409":
+          description: "Booking already exists"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Booking already exist"
+                  message_code:
+                    example: "Booking_ALREADY_EXIST"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"   
   /professor/byemail:
     get:
       tags:
