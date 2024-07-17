@@ -106,3 +106,44 @@ class BookingModel:
         except Exception as e:
             logging.exception(e)
             return False, str(e)
+        
+    @staticmethod
+    def find_by_id(lab_book_id):
+        return find_by_id(lab_book_id)
+
+    @staticmethod
+    def update(lab_book_id, update_data):
+        return update(lab_book_id, update_data)
+
+    @staticmethod
+    def book_computer(lab_book_id, student_email, student_name, computer, usage_time):
+        try:
+            # Find the lab book by ID
+            lab_book_data = find_by_id(lab_book_id)
+            if not lab_book_data:
+                return False, "Lab book not found"
+
+            # Check if the computer is already booked
+            for student in lab_book_data['students']:
+                if student['computer'] == computer:
+                    return False, "Computer is already booked"
+
+            # Add the new student to the list
+            new_student = {
+                "student_email": student_email,
+                "student_name": student_name,
+                "computer": computer,
+                "usage_time": usage_time
+            }
+            lab_book_data['students'].append(new_student)
+
+            # Update the lab book in the database
+            updated = update(lab_book_id, {"students": lab_book_data["students"]})
+            if updated.modified_count > 0:
+                return True, "Booking successful"
+            else:
+                return False, "Failed to book computer"
+
+        except Exception as e:
+            logging.exception("Error booking computer: %s", e)
+            return False, str(e)

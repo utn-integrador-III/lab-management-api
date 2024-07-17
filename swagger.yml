@@ -104,6 +104,30 @@ definitions:
       description:
         type: string
         example: "Laboratories Lab"
+  UpdateBooking:
+    type: object
+    required:
+      - "lab_book_id"
+      - "student_email"
+      - "student_name"
+      - "computer"
+      - "usage_time"
+    properties:
+      lab_book_id:
+        type: string
+        example: "66882fc47495a27748ac7bb8"
+      student_email:
+        type: string
+        example: "alejandro@est.utn.ac.cr"
+      student_name:
+        type: string
+        example: "Alejandro Jose Rodríguez Jaen"
+      computer:
+        type: string
+        example: "pc-1"
+      usage_time:
+        type: string
+        example: "{ \"$date\": { \"$numberLong\": \"1718557800000\" } }"
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
@@ -213,6 +237,95 @@ paths:
                     message_code:
                       example: "INVALID_ID"
   /Lab/{LabId}:
+
+    put:
+      tags:
+        - "Labs"
+      summary: "Update a lab booking with new student information"
+      description: "This endpoint updates a lab booking by adding a new student with the provided information."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Lab booking update data"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateBooking"
+      responses:
+        "200":
+          description: "Computer booked successfully"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/UpdateBooking"
+              message:
+                type: string
+                example: "Computer booked successfully"
+              message_code:
+                type: string
+                example: "LAB_SUCCESSFULLY_UPDATED"
+        "400":
+          description: "Validation Error"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Invalid update data: missing key 'computer'"
+              message_code:
+                type: string
+                example: "INCORRECT_REQUEST_PARAM"
+        "404":
+          description: "Lab book not found"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Lab book not found"
+              message_code:
+                type: string
+                example: "LAB_NOT_FOUND"
+        "409":
+          description: "Computer already booked"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Computer already booked"
+              message_code:
+                type: string
+                example: "CONFLICT_MSG"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Error retrieving lab book: Invalid ObjectId: 66882fc47495a27748ac7b"
+              message_code:
+                type: string
+                example: "INTERNAL_SERVER_ERROR_MSG"
     get:
       tags:
         - "Labs"
