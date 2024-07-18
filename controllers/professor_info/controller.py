@@ -23,7 +23,7 @@ class ProfessorInfoController(Resource):
             if not professors:
                 return ServerResponse(
                     data=None,
-                    message="No professors found",
+                    message="Professors not found",
                     message_code=NO_DATA,
                     status=StatusCode.BAD_REQUEST,
                 )
