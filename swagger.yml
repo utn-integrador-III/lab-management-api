@@ -15,7 +15,7 @@ basePath: "/booking_api"
 tags:
   - name: "Labs"
     description: "All Lab's Endpoints"
-  - name: "Bookings"
+  - name: "Booking"
     description: "All Booking's Endpoints"
 #the schemes will define the protocol that are been used by the end-points inside the API
 schemes:
@@ -226,7 +226,41 @@ definitions:
                 course_name:
                   type: "string"
                   example: "Matematica discreta"
-
+  ProfessorInfoGet:
+    type: object
+    properties:
+      _id:
+        type: string
+        example: 7619ajbamami91
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      professor_name:
+        type: string
+        example: "Ever Barahona Mendoza"
+      career:
+        type: object
+        properties:
+          career_id:
+            type: string
+            example: "ITI"
+          career_name:
+            type: string
+            example: "Tecnologia de la Informacion"
+      subject:
+        type: array
+        items:
+          type: object
+          properties:
+            subject_id:
+              type: string
+            subject_name:
+              type: string
+        example:
+        - subject_id: "ITI-123"
+          subject_name: "Fundamentos de Base de Datos"
+        - subject_id: "ITI-412"
+          subject_name: "Ingenieria de Requerimientos y Modelado de SW"
 
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
@@ -430,7 +464,7 @@ paths:
   /booking:
     post:
       tags:
-        - "Bookings"
+        - "Booking"
       parameters:
         - in: "body"
           name: "body"
@@ -470,18 +504,22 @@ paths:
         "500":
           description: "Internal Server Error"
           schema:
-            $ref: "#/definitions/InternalErrorResponse" 
-      paths:
+            $ref: "#/definitions/InternalErrorResponse"   
+       
   /booking/computer:
     delete:
-      summary: "Eliminar una reserva de computadora"
-      description: "Este endpoint es utilizado por los estudiantes para eliminar una reserva. Elimina al estudiante para una computadora específica en la colección `lab_book`."
       tags:
         - "Booking"
+      summary: "Eliminar una reserva de computadora"
+      description: "Este endpoint es utilizado por los estudiantes para eliminar una reserva. Elimina al estudiante para una computadora específica en la colección `lab_book`."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
       parameters:
         - in: "body"
           name: "body"
-          description: "Información de la reserva que se va a eliminar"
+          description: "Datos necesarios para eliminar una reserva"
           required: true
           schema:
             type: object
@@ -502,57 +540,41 @@ paths:
       responses:
         '200':
           description: "Reserva eliminada exitosamente"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Reserva eliminada exitosamente"
-                  message_code:
-                    type: string
-                    example: "SUCCESS_MSG"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Reserva eliminada exitosamente"
+              message_code:
+                type: string
+                example: "RESERVA_ELIMINADA_EXITOSAMENTE"
         '400':
           description: "Solicitud incorrecta, faltan datos requeridos"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Faltan datos requeridos"
-                  message_code:
-                    type: string
-                    example: "INCORRECT_REQUEST_PARAM"
-        '404':
-          description: "Reserva no encontrada"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Reserva no encontrada"
-                  message_code:
-                    type: string
-                    example: "RESERVATION_NOT_FOUND"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Faltan datos requeridos"
+              message_code:
+                type: string
+                example: "DATOS_REQUERIDOS_FALTANTES"
         '500':
           description: "Error interno del servidor"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Error interno del servidor"
-                  message_code:
-                    type: string
-                    example: "ERROR_MSG"
-
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error interno del servidor"
+              message_code:
+                type: string
+                example: "ERROR_INTERNO_SERVIDOR"
+     
+    
+            
+    
   /professor/byemail:
     get:
       tags:
@@ -605,6 +627,33 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+  /professor/info:
+    get:
+      tags:
+        - "Professors"
+      summary: "Get professor information"
+      description: "Returns the detailed information of a professor"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/ProfessorInfoGet"
+        "404":
+          description: "Not Found - Professor not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+            example:
+              data: null
+              message: "Professor not found"
+              message_code: "PROFESSOR_NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
