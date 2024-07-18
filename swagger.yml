@@ -573,7 +573,8 @@ paths:
         "404":
           description: "Not Found - Professor not found"
           schema:
-            $ref: "#/definitions/ErrorResponse"
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
             example:
               data: null
               message: "Professor not found"
