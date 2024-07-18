@@ -9,7 +9,7 @@ from models.booking.model import BookingModel
 import logging
 import re
 from bson import ObjectId
-
+from pymongo.errors import ServerSelectionTimeoutError
 from db.mongo_client import Connection 
 from decouple import config
 
@@ -106,11 +106,9 @@ class BookingController(Resource):
 
     def put(self):
         try:
-            # Parse and log the incoming JSON data from the request body
             update_data = request.get_json()
             logging.info(f"Received update data: {update_data}")
 
-            # Validate that the incoming data is a dictionary
             if not update_data or not isinstance(update_data, dict):
                 return ServerResponse(
                     message="No valid data provided for update",
@@ -118,7 +116,6 @@ class BookingController(Resource):
                     status=StatusCode.BAD_REQUEST,
                 )
 
-            # Extract and validate the lab_book_id from the incoming data
             lab_book_id = update_data.get("lab_book_id")
             if not lab_book_id:
                 return ServerResponse(
@@ -129,10 +126,16 @@ class BookingController(Resource):
 
             logging.info(f"Attempting to retrieve lab book with ID: {lab_book_id}")
 
-            # Attempt to retrieve the lab book from the database
             try:
                 lab_book = BookingModel.find_by_id(lab_book_id)
                 logging.info(f"Retrieved lab book: {lab_book}")
+            except ServerSelectionTimeoutError as ex:
+                logging.error(f"Database connection error: {ex}")
+                return ServerResponse(
+                    message="Unable to connect to the database. Please try again later.",
+                    message_code=INTERNAL_SERVER_ERROR_MSG,
+                    status=StatusCode.INTERNAL_SERVER_ERROR,
+                )
             except Exception as ex:
                 logging.error(f"Error retrieving lab book: {ex}")
                 logging.error(traceback.format_exc())
@@ -142,7 +145,6 @@ class BookingController(Resource):
                     status=StatusCode.INTERNAL_SERVER_ERROR,
                 )
 
-            # Validate that the lab book was found
             if not lab_book:
                 return ServerResponse(
                     message="Lab book not found",
@@ -195,6 +197,13 @@ class BookingController(Resource):
             try:
                 update_success = BookingModel.update(lab_book_id, {"students": lab_book["students"]})
                 logging.info(f"Update result: {update_success}")
+            except ServerSelectionTimeoutError as ex:
+                logging.error(f"Database connection error during update: {ex}")
+                return ServerResponse(
+                    message="Unable to connect to the database. Please try again later.",
+                    message_code=INTERNAL_SERVER_ERROR_MSG,
+                    status=StatusCode.INTERNAL_SERVER_ERROR,
+                )
             except Exception as ex:
                 logging.error(f"Error updating lab book: {ex}")
                 logging.error(traceback.format_exc())
@@ -204,7 +213,6 @@ class BookingController(Resource):
                     status=StatusCode.INTERNAL_SERVER_ERROR,
                 )
 
-            # Validate the update success
             if not update_success:
                 return ServerResponse(
                     message="Failed to book computer",
@@ -215,7 +223,6 @@ class BookingController(Resource):
             # Convert the lab book object to a serializable format
             lab_book = convert_object(lab_book)
 
-            # Return a successful response with the updated lab book data
             return ServerResponse(
                 data=lab_book,
                 message="Computer booked successfully",
