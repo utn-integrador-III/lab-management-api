@@ -15,7 +15,7 @@ basePath: "/booking_api"
 tags:
   - name: "Labs"
     description: "All Lab's Endpoints"
-  - name: "Bookings"
+  - name: "Booking"
     description: "All Booking's Endpoints"
 #the schemes will define the protocol that are been used by the end-points inside the API
 schemes:
@@ -464,7 +464,7 @@ paths:
   /booking:
     post:
       tags:
-        - "Bookings"
+        - "Booking"
       parameters:
         - in: "body"
           name: "body"
