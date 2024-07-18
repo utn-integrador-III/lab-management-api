@@ -12,13 +12,13 @@ class LabModel:
         self.lab_name = lab_name
         self.lab_num = lab_num
         self._id = _id
-        self.computers=computers
+        self.computers = computers
 
     def to_dict(self):
         return {
             "lab_name": self.lab_name,
             "lab_num": self.lab_num,
-            "computers": self.computers
+            "computers": self.computers,
         }
 
     # @classmethod
@@ -37,7 +37,6 @@ class LabModel:
     @classmethod
     def get_by_lab_num(cls, lab_num):
         return None
-    
 
     @classmethod
     def get_by_name(cls, lab_name):
@@ -61,8 +60,6 @@ class LabModel:
             logging.exception(ex)
             raise Exception("Failed to create lab: " + str(ex))
 
-        
-
     @classmethod
     def delete(cls, _id):
         try:
@@ -85,8 +82,7 @@ class LabModel:
             raise ex  # Re-raise InvalidId to handle it specifically in the get method
         except Exception as ex:
             raise Exception(f"Error fetching zone by id {id}: {ex}")
-        
-    
+
     @classmethod
     def update(cls, id, update_data):
         if not isinstance(id, str) or not ObjectId.is_valid(id):
@@ -99,6 +95,3 @@ class LabModel:
             return updated_zone
         else:
             return None
-        
-
-
