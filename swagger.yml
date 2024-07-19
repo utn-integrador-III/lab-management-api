@@ -2,19 +2,21 @@
 #about the .yml file.
 swagger: "2.0"
 info:
-  description: "Stuedent Service API's Documentation"
+  description: "Lab-Management API's Documentation"
   version: "1.0.0"
-  title: "Swagger Student Service API"
+  title: "Swagger Lab-Management API"
   termsOfService: "Terms"
   contact:
     email: "ebarahona@utn.ac.cr"
-host: "localhost:5001"
+host: "localhost:5003"
 basePath: "/booking_api"
 #The tags are the identifiers for the paths that are created, this will assign a path with a unique tag,
 #meaning that, an specific end-point belongs to a tag or identifier
 tags:
   - name: "Labs"
     description: "All Lab's Endpoints"
+  - name: "Booking"
+    description: "All Booking's Endpoints"
 #the schemes will define the protocol that are been used by the end-points inside the API
 schemes:
   - "https"
@@ -22,6 +24,24 @@ schemes:
 #The definitions will display the information that the end-points will return, all along with the
 #corresponding messages of the errors.
 definitions:
+  careerResponse:
+    type: object
+    properties:
+      career_id:
+        type: string
+        example: "ITI"
+      career_name:
+        type: string
+        example: "Tecnologia de la Informacion"
+  subjectResponse:
+    type: object
+    properties:
+      subject_id:
+        type: string
+        example: "ITI-412"
+      subject_name:
+        type: string
+        example: "Metodología Agiles de Desarrollo de Software"
   Response:
     type: object
     properties:
@@ -104,30 +124,144 @@ definitions:
       description:
         type: string
         example: "Laboratories Lab"
-  UpdateBooking:
+  BookingGet:
+    type: object
+    properties:
+      professor:
+        type: string
+        example: "Ever Barahona Mendoza"
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      career:
+        type: array
+        items:
+          $ref: "#/definitions/careerResponse"
+      subject:
+        type: array
+        items:
+          $ref: "#/definitions/subjectResponse"
+      lab:
+        type: integer
+        example: 412
+      end_time:
+        type: string
+        example: "2024-07-11T21:00:00-06:00"
+      start_time:
+        type: string
+        example: "2024-07-11T17:00:00-06:00"
+      students:
+        type: array
+        items:
+          type: string
+      observations:
+        type: string
+        example: ""
+  BookingPost:
     type: object
     required:
-      - "lab_book_id"
-      - "student_email"
-      - "student_name"
-      - "computer"
-      - "usage_time"
+      - "professor"
+      - "professor_email"
+      - "career"
+      - "subject"
+      - "lab"
+      - "end_time"
+      - "start_time"
     properties:
-      lab_book_id:
+      professor:
         type: string
-        example: "66882fc47495a27748ac7bb8"
-      student_email:
+        example: "Ever Barahona Mendoza"
+      professor_email:
         type: string
-        example: "alejandro@est.utn.ac.cr"
-      student_name:
+        example: "ebarahona@utn.ac.cr"
+      career:
+        type: array
+        items:
+          $ref: "#/definitions/careerResponse"
+      subject:
+        type: array
+        items:
+          $ref: "#/definitions/subjectResponse"
+      lab:
+        type: integer
+        example: 412
+      end_time:
         type: string
-        example: "Alejandro Jose Rodríguez Jaen"
-      computer:
+        example: "2024-07-11T21:00:00-06:00"
+      start_time:
         type: string
-        example: "pc-1"
-      usage_time:
+        example: "2024-07-11T17:00:00-06:00"
+      students:
+        type: array
+        items:
+          type: string
+      observations:
         type: string
-        example: "{ \"$date\": { \"$numberLong\": \"1718557800000\" } }"
+        example: ""
+  ProfessorGetByEmail:
+    type: object
+    properties:
+      data:
+        properties:
+          professor_name:
+            type: string
+            example: "Juan Luis Bravo"
+          professor_email:
+            type: string
+            example: "juanluis@utn.ac.cr"
+          CareerId:
+            type: string
+            example: "ITI"
+          Career:
+            type: string
+            example: "Tecnologia de la Informacion"
+          Courses:
+            type: "array"
+            items:
+              type: object
+              properties:
+                course_id:
+                  type: string
+                  example: "ITI-201"
+                course_name:
+                  type: "string"
+                  example: "Matematica discreta"
+  ProfessorInfoGet:
+    type: object
+    properties:
+      _id:
+        type: string
+        example: 7619ajbamami91
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      professor_name:
+        type: string
+        example: "Ever Barahona Mendoza"
+      career:
+        type: object
+        properties:
+          career_id:
+            type: string
+            example: "ITI"
+          career_name:
+            type: string
+            example: "Tecnologia de la Informacion"
+      subject:
+        type: array
+        items:
+          type: object
+          properties:
+            subject_id:
+              type: string
+            subject_name:
+              type: string
+        example:
+        - subject_id: "ITI-123"
+          subject_name: "Fundamentos de Base de Datos"
+        - subject_id: "ITI-412"
+          subject_name: "Ingenieria de Requerimientos y Modelado de SW"
+
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
@@ -416,6 +550,129 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+  /booking:
+    post:
+      tags:
+        - "Booking"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Booking object that needs to be added"
+          required: true
+          schema:
+            $ref: "#/definitions/BookingPost"
+      summary: "Create a Booking"
+      description: "Create a Booking"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "201":
+          description: "Booking succesfully created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/BookingGet"
+                  message:
+                    example: "Booking successfully created"
+                  message_code:
+                    example: "BOOKING_SUCCESSFULLY_CREATED"
+        "409":
+          description: "Booking already exists"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Booking already exist"
+                  message_code:
+                    example: "Booking_ALREADY_EXIST"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"   
+  /professor/byemail:
+    get:
+      tags:
+        - "Professors"
+      summary: "Get professor information by email"
+      description: "Returns the information of a professor based on their email address"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "professor_email"
+          in: "query"
+          description: "Email address of the professor"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/ProfessorGetByEmail"
+            
+        "400":
+          description: "Bad Request - Professor email parameter is required"
+          schema:
+            type: "object"
+            properties:
+              data:
+                type: "string"
+                example: null
+              message:
+                type: "string"
+                example: "Professor email required"
+              message_code:
+                type: "string"
+                example: "PROFESSOR_EMAIL_REQUIRED"
+        "404":
+          description: "Not Found - Professor not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Professor not found"
+                  message_code:
+                    example: "PROFESSOR_NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+  /professor/info:
+    get:
+      tags:
+        - "Professors"
+      summary: "Get professor information"
+      description: "Returns the detailed information of a professor"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/ProfessorInfoGet"
+        "404":
+          description: "Not Found - Professor not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+            example:
+              data: null
+              message: "Professor not found"
+              message_code: "PROFESSOR_NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
