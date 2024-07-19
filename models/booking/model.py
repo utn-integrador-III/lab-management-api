@@ -3,7 +3,6 @@ from bson import ObjectId
 from flask import config as flask_config
 import pytz
 from decouple import config as decouple_config
-from db.mongo_client import Connection
 from utils.server_response import ServerResponse, StatusCode
 from utils.message_codes import *
 from models.booking.db_queries import __dbmanager__, find_by_id, update
@@ -115,11 +114,11 @@ class BookingModel:
     def find_by_id(lab_book_id):
         collection_name = decouple_config('LAB_BOOK_COLLECTION')
         try:
-            return Connection(collection_name).get_by_id(lab_book_id)
+            return __dbmanager__.get_by_id(lab_book_id)
         except ServerSelectionTimeoutError as e:
             logging.error(f"Database connection error: {e}")
             raise   
     @staticmethod
     def update(lab_book_id, update_data):
-        collection_name = decouple_config('LAB_BOOK_COLLECTION')  # Igual aquí
-        return Connection(collection_name).update_data(lab_book_id, update_data)
+        collection_name = decouple_config('LAB_BOOK_COLLECTION')  
+        return __dbmanager__.update_data(lab_book_id, update_data)
