@@ -6,11 +6,19 @@ from utils.message_codes import *
 import logging
 from models.professor_info.model import ProfessorInfoModel
 from flask import request
-
+from utils.auth_manager import auth_required
 class ProfessorByEmailController(Resource):
     route = "/professor/byemail"
 
-    def get(self):
+    @auth_required(permission='read', with_args=True)
+    def put(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             professor_email = request.args.get('professor_email')
             if not professor_email:

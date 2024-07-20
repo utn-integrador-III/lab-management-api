@@ -4,13 +4,21 @@ from utils.server_response import ServerResponse, StatusCode
 from flask_restful import Resource
 from utils.server_response import *
 from utils.message_codes import *
-
+from utils.auth_manager import auth_required
 
 class ProfessorInfoController(Resource):
 
     route = "/professor"
 
-    def get(self):
+    @auth_required(permission='update', with_args=True)
+    def put(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             professors = ProfessorInfoModel.get_all()
             if isinstance(professors, dict) and "error" in professors:
