@@ -37,6 +37,13 @@ class Connection:
         except Exception as e:
             return e
         return result
+    
+    def get_by_query(self, query):
+        try:
+            result = self.collection.find(query)
+        except Exception as e:
+            return e
+        return result
 
     def create_data(self, data):
         try:
@@ -58,6 +65,15 @@ class Connection:
         except Exception as e:
             logging.exception(e)
             return str(e)
+
+    def update_by_condition(self, condition, new_data):
+        try:
+            self.collection.update_one(
+                condition,
+                {"$set": new_data}
+            )
+        except Exception as e:
+            return e
 
     def delete_data(self, id):
         try:
