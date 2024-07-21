@@ -14,7 +14,7 @@ class LabByIdController(Resource):
     Get lab by num
     """    
     @auth_required(permission='read', with_args=True)
-    def put(self, **kwargs):
+    def get(self, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
             # Proceed with access to current_user data

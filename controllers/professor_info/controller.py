@@ -11,7 +11,7 @@ class ProfessorInfoController(Resource):
     route = "/professor"
 
     @auth_required(permission='update', with_args=True)
-    def put(self, **kwargs):
+    def get(self, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
             # Proceed with access to current_user data
