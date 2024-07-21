@@ -494,6 +494,12 @@ paths:
     get:
       tags:
         - "Labs"
+      parameters:
+      - name: Authorization
+        in: header
+        description: an authorization header
+        required: true
+        type: string
       summary: "Get list of all Labs"
       description: "Get list of all Labs"
       consumes:
@@ -553,7 +559,12 @@ paths:
     post:
       tags:
         - "Labs"
-      parameters:
+      parameters:      
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
         - in: "body"
           name: "body"
           description: "Lab object that needs to be added"
@@ -620,6 +631,11 @@ paths:
         tags:
           - "Labs"
         parameters:
+          - name: Authorization
+            in: header
+            description: an authorization header
+            required: true
+            type: string
           - in: "body"
             name: "body"
             description: "Lab object that needs to be updated"
@@ -708,6 +724,11 @@ paths:
           required: true
           type: "integer"
           format: "integer"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
       responses:
         "200":
           description: "Get single Lab successfully"
@@ -773,6 +794,11 @@ paths:
           required: true
           type: "integer"
           format: "integer"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
       responses:
         "200":
           description: "Lab successfully deleted"
@@ -831,6 +857,11 @@ paths:
       tags:
         - "Booking"
       parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
         - in: "body"
           name: "body"
           description: "Booking object that needs to be added"
@@ -904,6 +935,11 @@ paths:
       produces:
         - "application/json"
       parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
         - in: "body"
           name: "body"
           description: "Datos necesarios para eliminar una reserva"
@@ -982,6 +1018,11 @@ paths:
           description: "Email address of the professor"
           required: true
           type: "string"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
       responses:
         "200":
           description: "Successful response"
@@ -1034,6 +1075,12 @@ paths:
     get:
       tags:
         - "Professors"
+      parameters:
+      - name: Authorization
+        in: header
+        description: an authorization header
+        required: true
+        type: string
       summary: "Get professor information"
       description: "Returns the detailed information of a professor"
       produces:
@@ -1081,6 +1128,11 @@ paths:
       produces:
         - "application/json"
       parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
         - in: "body"
           name: "body"
           description: "Issue object that needs to be added"

@@ -4,6 +4,7 @@ from utils.server_response import *
 from utils.message_codes import *
 from models.lab.model import LabModel
 from controllers.lab.parser import query_parser_save
+from utils.auth_manager import auth_required
 import logging
 from bson.errors import InvalidId
 
@@ -13,7 +14,15 @@ class LabController(Resource):
     """
     Get all labs
     """
-    def get(self):
+    @auth_required(permission='read', with_args=True)
+    def get(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             labs = LabModel.get_all()
 
@@ -44,7 +53,15 @@ class LabController(Resource):
     """
     Create a new Lab 
     """
-    def post(self):
+    @auth_required(permission='write', with_args=True)
+    def post(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             # Obtain data from the body of the request
             data = request.get_json()
@@ -84,7 +101,15 @@ class LabController(Resource):
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
         
-    def put(self):
+    @auth_required(permission='update', with_args=True)
+    def put(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             # Get update data from the request body
             update_data = request.get_json()
@@ -166,8 +191,15 @@ class LabController(Resource):
                 status=StatusCode.INTERNAL_SERVER_ERROR,
             )
         
-
-    def delete(self):
+    @auth_required(permission='delete', with_args=True)
+    def delete(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             update_data = request.get_json()
             update_data = update_data.get("_id")

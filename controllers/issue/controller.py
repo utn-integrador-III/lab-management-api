@@ -3,6 +3,7 @@ from flask import request
 from utils.server_response import ServerResponse, StatusCode
 from utils.message_codes import ISSUE_LAB_REQUIRED, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_REPORT_TO_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_STATUS_REQUIRED, ISSUE_UPDATE_REQUIRED, LAB_ALREADY_EXIST, ISSUE_SUCCESSFULLY_CREATED
 from models.issue.model import IssueModel
+from utils.auth_manager import auth_required
 import logging
 from datetime import datetime
 
@@ -12,7 +13,15 @@ class IssueController(Resource):
     """
     Create a new issue 
     """
-    def post(self):
+    @auth_required(permission='write', with_args=True)
+    def post(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             # Obtain data from the body of the request
             data = request.get_json()
