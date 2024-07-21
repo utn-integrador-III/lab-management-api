@@ -10,8 +10,7 @@ import logging
 import re
 from bson import ObjectId
 from pymongo.errors import ServerSelectionTimeoutError
-from db.mongo_client import Connection 
-from decouple import config
+
 
 
 def convert_object(obj):

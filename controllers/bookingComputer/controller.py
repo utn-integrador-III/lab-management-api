@@ -3,12 +3,21 @@ from flask import request
 from utils.server_response import ServerResponse, StatusCode
 from utils.message_codes import *
 from models.booking.model import BookingModel
+from utils.auth_manager import auth_required
 import logging
 
 class BookingComputerController(Resource):
     route = "/booking/computer"
 
-    def delete(self):
+    @auth_required(permission='delete', with_args=True)
+    def delete(self, id, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             # Obtener datos del cuerpo de la solicitud
             data = request.get_json()
