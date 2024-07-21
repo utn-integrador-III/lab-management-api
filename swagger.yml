@@ -199,7 +199,6 @@ definitions:
         type: string
         example: ""
   BookingPut:
-    UpdateBooking:
     type: object
     required:
       - "lab_book_id"
@@ -531,94 +530,7 @@ paths:
                       example: "INVALID_ID"
   /Lab/{LabId}:
 
-    put:
-      tags:
-        - "Labs"
-      summary: "Update a lab booking with new student information"
-      description: "This endpoint updates a lab booking by adding a new student with the provided information."
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Lab booking update data"
-          required: true
-          schema:
-            $ref: "#/definitions/UpdateBooking"
-      responses:
-        "200":
-          description: "Computer booked successfully"
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  $ref: "#/definitions/UpdateBooking"
-              message:
-                type: string
-                example: "Computer booked successfully"
-              message_code:
-                type: string
-                example: "LAB_SUCCESSFULLY_UPDATED"
-        "400":
-          description: "Validation Error"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Invalid update data: missing key 'computer'"
-              message_code:
-                type: string
-                example: "INCORRECT_REQUEST_PARAM"
-        "404":
-          description: "Lab book not found"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Lab book not found"
-              message_code:
-                type: string
-                example: "LAB_NOT_FOUND"
-        "409":
-          description: "Computer already booked"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Computer already booked"
-              message_code:
-                type: string
-                example: "CONFLICT_MSG"
-        "500":
-          description: "Internal Server Error"
-          schema:
-            type: object
-            properties:
-              data:
-                type: string
-                example: null
-              message:
-                type: string
-                example: "Error retrieving lab book: Invalid ObjectId: 66882fc47495a27748ac7b"
-              message_code:
-                type: string
-                example: "INTERNAL_SERVER_ERROR_MSG"
+    
     get:
       tags:
         - "Labs"
@@ -852,7 +764,94 @@ paths:
                 message_code:
                   type: string
                   example: "INTERNAL_SERVER_ERROR_MSG"
-
+    put:
+      tags:
+        - "Booking"
+      summary: "Update a lab booking with new student information"
+      description: "This endpoint updates a lab booking by adding a new student with the provided information."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Lab booking update data"
+          required: true
+          schema:
+            $ref: "#/definitions/BookingPut"
+      responses:
+        "200":
+          description: "Computer booked successfully"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/BookingPut"
+              message:
+                type: string
+                example: "Computer booked successfully"
+              message_code:
+                type: string
+                example: "LAB_SUCCESSFULLY_UPDATED"
+        "400":
+          description: "Validation Error"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Invalid update data: missing key 'computer'"
+              message_code:
+                type: string
+                example: "INCORRECT_REQUEST_PARAM"
+        "404":
+          description: "Lab book not found"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Lab book not found"
+              message_code:
+                type: string
+                example: "LAB_NOT_FOUND"
+        "409":
+          description: "Computer already booked"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Computer already booked"
+              message_code:
+                type: string
+                example: "CONFLICT_MSG"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Error retrieving lab book: Invalid ObjectId: 66882fc47495a27748ac7b"
+              message_code:
+                type: string
+                example: "INTERNAL_SERVER_ERROR_MSG"
        
   /booking/computer:
     delete:
