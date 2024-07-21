@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from utils.server_response import *
 from models.lab.model import LabModel
+from utils.auth_manager import auth_required
 import logging
 from bson.errors import InvalidId
 
@@ -12,7 +13,15 @@ class LabByIdController(Resource):
     """
     Get lab by num
     """    
-    def get(self,id):
+    @auth_required(permission='read', with_args=True)
+    def put(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             result = LabModel.get_by_id(id)
             if result:

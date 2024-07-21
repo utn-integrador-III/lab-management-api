@@ -5,6 +5,7 @@ from utils.message_codes import *
 from models.booking.model import BookingModel
 import logging
 import re
+from utils.auth_manager import auth_required
 
 class BookingController(Resource):
     route = "/booking"
@@ -12,7 +13,15 @@ class BookingController(Resource):
     """
     Create a new booking 
     """
-    def post(self):
+    @auth_required(permission='write', with_args=True)
+    def post(self,**kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             data = request.get_json()
             if not data.get("professor"):
