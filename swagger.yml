@@ -42,6 +42,21 @@ definitions:
       subject_name:
         type: string
         example: "Metodología Agiles de Desarrollo de Software"
+  StudentGet:
+    type: object
+    properties:
+      student_email:
+        type: string
+        example: "semataoe@est.utn.ac.cr"
+      student_name:
+        type: string
+        example: "Sebastian Mata"
+      computer:
+        type: string
+        example: "PC-01"
+      usage_time:
+        type: string
+        example: "2024-06-16T21:00:00.000+00:00"
   Response:
     type: object
     properties:
@@ -95,35 +110,128 @@ definitions:
       _id:
         type: string
         example: "0183IEHU#&#J"
-      LabID:
-        type: integer
-        example: 34
-      name:
+      lab_name:
         type: string
         example: "Laboratories"
-      description:
-        type: string
-        example: Laboratories Lab
+      lab_num:
+        type: number
+        example: 301
+      computers:
+        type: array
+        items:
+          type: string
+        example:
+          - "pc-01"
+          - "pc-02"
+          - "pc-03"
+          - "pc-04"
+          - "pc-05"
+          - "pc-06"
+          - "pc-07"
+          - "pc-08"
+          - "pc-09"
+          - "pc-10"
+          - "pc-11"
+          - "pc-12"
+          - "pc-13"
+          - "pc-14"
+          - "pc-15"
+          - "pc-16"
+          - "pc-17"
+          - "pc-18"
+          - "pc-19"
+          - "pc-20"
+          - "pc-21"
+          - "pc-22"
+          - "pc-23"
+          - "pc-24"
+          - "pc-25"
   LabGetById:
     type: object
     properties:
       _id:
-        type: integer
-        example: 34
-      name:
+        type: string
+        example: "0183IEHU#&#J"
+      lab_name:
         type: string
         example: "Laboratories"
+      lab_num:
+        type: number
+        example: 301
+      computers:
+        type: array
+        items:
+          type: string
+        example:
+          - "pc-01"
+          - "pc-02"
+          - "pc-03"
+          - "pc-04"
+          - "pc-05"
+          - "pc-06"
+          - "pc-07"
+          - "pc-08"
+          - "pc-09"
+          - "pc-10"
+          - "pc-11"
+          - "pc-12"
+          - "pc-13"
+          - "pc-14"
+          - "pc-15"
+          - "pc-16"
+          - "pc-17"
+          - "pc-18"
+          - "pc-19"
+          - "pc-20"
+          - "pc-21"
+          - "pc-22"
+          - "pc-23"
+          - "pc-24"
+          - "pc-25"
   LabPost:
     type: object
     required:
       - "name"
     properties:
-      name:
+      _id:
+        type: string
+        example: "0183IEHU#&#J"
+      lab_name:
         type: string
         example: "Laboratories"
-      description:
-        type: string
-        example: "Laboratories Lab"
+      lab_num:
+        type: number
+        example: 301
+      computers:
+        type: array
+        items:
+          type: string
+        example:
+          - "pc-01"
+          - "pc-02"
+          - "pc-03"
+          - "pc-04"
+          - "pc-05"
+          - "pc-06"
+          - "pc-07"
+          - "pc-08"
+          - "pc-09"
+          - "pc-10"
+          - "pc-11"
+          - "pc-12"
+          - "pc-13"
+          - "pc-14"
+          - "pc-15"
+          - "pc-16"
+          - "pc-17"
+          - "pc-18"
+          - "pc-19"
+          - "pc-20"
+          - "pc-21"
+          - "pc-22"
+          - "pc-23"
+          - "pc-24"
+          - "pc-25"
   BookingGet:
     type: object
     properties:
@@ -153,7 +261,7 @@ definitions:
       students:
         type: array
         items:
-          type: string
+          $ref: "#/definitions/StudentGet"
       observations:
         type: string
         example: ""
@@ -194,7 +302,7 @@ definitions:
       students:
         type: array
         items:
-          type: string
+          $ref: "#/definitions/StudentGet"
       observations:
         type: string
         example: ""
@@ -424,9 +532,50 @@ paths:
         - "application/json"
       responses:
         "200":
-          description: "A list of countries"
+          description: "A list of Labs"
           schema:
-            $ref: "#/definitions/LabGet"
+            allOf:
+            - $ref: "#/definitions/Response"
+            - properties: 
+                data:
+                  items:
+                    $ref: "#/definitions/LabGet"
+                message:
+                  example: "Successfully requested"
+                message_code:
+                  example: "OK_MSG"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "404":
+          description: "No Labs found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Labs not found"
+                  message_code:
+                    example: "NOT_FOUND"
         "500":
           description: "Internal Server Error"
           schema:
@@ -454,17 +603,40 @@ paths:
         - "application/json"
       responses:
         "201":
-          description: "Lab succesfully created"
+          description: "Lab Successfully Created"
           schema:
             allOf:
-              - $ref: "#/definitions/Response"
+            - $ref: "#/definitions/Response"
+            - properties: 
+                data:
+                  items:
+                    $ref: "#/definitions/LabGet"
+                message:
+                  example: "Lab Created"
+                message_code:
+                  example: "LAB_SUCCESSFULLY_CREATED"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
               - properties:
                   data:
-                    $ref: "#/definitions/LabGet"
+                    $ref: "#/definitions/StudentGet"
                   message:
-                    example: "Country successfully created"
+                    example: "Server Couldn't Process the Request"
                   message_code:
-                    example: "COUNTRY_SUCCESSFULLY_CREATED"
+                    example: "BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
         "409":
           description: "Lab already exists"
           schema:
@@ -472,9 +644,9 @@ paths:
               - $ref: "#/definitions/ErrorResponse"
               - properties:
                   message:
-                    example: "Lab aready exist"
+                    example: "Lab already exist"
                   message_code:
-                    example: "Lab_ALREADY_EXIST"
+                    example: "LAB_ALREADY_EXIST"
         "500":
           description: "Internal Server Error"
           schema:
@@ -513,11 +685,42 @@ paths:
                       example: "Lab successfully updated"
                     message_code:
                       example: "Lab_SUCCESSFULLY_UPDATED"
+          "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+          "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
+          "404":
+            description: "No Labs found"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "Labs not found"
+                    message_code:
+                      example: "NOT_FOUND"
           "500":
             description: "Internal Server Error"
             schema:
               $ref: "#/definitions/InternalErrorResponse"
-
           "422":
             description: "Invalid Id"
             schema:
@@ -561,6 +764,28 @@ paths:
               - properties:
                   data:
                     $ref: "#/definitions/LabGet"
+        "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
         "404":
           description: "Lab not found"
           schema:
@@ -613,8 +838,30 @@ paths:
                     example: "Lab successfully deleted"
                   message_code:
                     example: "Lab_SUCCESSFULLY_DELETED"
+        "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
         "404":
-          description: "Country not found"
+          description: "Lab not found"
           schema:
             allOf:
               - $ref: "#/definitions/ErrorResponse"
@@ -666,6 +913,28 @@ paths:
                     example: "Booking successfully created"
                   message_code:
                     example: "BOOKING_SUCCESSFULLY_CREATED"
+        "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
         "409":
           description: "Booking already exists"
           schema:
@@ -901,6 +1170,16 @@ paths:
               message_code:
                 type: string
                 example: "RESERVA_ELIMINADA_EXITOSAMENTE"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
         '400':
           description: "Solicitud incorrecta, faltan datos requeridos"
           schema:
@@ -922,11 +1201,7 @@ paths:
                 example: "Error interno del servidor"
               message_code:
                 type: string
-                example: "ERROR_INTERNO_SERVIDOR"
-     
-    
-            
-    
+                example: "ERROR_INTERNO_SERVIDOR"  
   /professor/byemail:
     get:
       tags:
@@ -955,6 +1230,16 @@ paths:
               - properties:
                   data:
                     $ref: "#/definitions/ProfessorGetByEmail"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
             
         "400":
           description: "Bad Request - Professor email parameter is required"
@@ -1002,7 +1287,21 @@ paths:
         "200":
           description: "Successful response"
           schema:
-            $ref: "#/definitions/ProfessorInfoGet"
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/ProfessorInfoGet"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
         "404":
           description: "Not Found - Professor not found"
           schema:
