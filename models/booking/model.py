@@ -1,10 +1,12 @@
 from datetime import datetime
+from bson import ObjectId
+from flask import config as flask_config
 import pytz
 from utils.server_response import ServerResponse, StatusCode
 from utils.message_codes import *
 from models.booking.db_queries import __dbmanager__, find_by_id, update
 import logging
-
+from pymongo.errors import ServerSelectionTimeoutError
 
 class BookingModel:
     def __init__(self, professor=None, professor_email=None, career=None, subject=None, lab=None, end_time=None, start_time=None, students=None, observations=None):
@@ -106,3 +108,14 @@ class BookingModel:
         except Exception as e:
             logging.exception(e)
             return False, str(e)
+        
+    @staticmethod
+    def find_by_id(lab_book_id):
+        try:
+            return __dbmanager__.get_by_id(lab_book_id)
+        except ServerSelectionTimeoutError as e:
+            logging.error(f"Database connection error: {e}")
+            raise   
+    @staticmethod
+    def update(lab_book_id, update_data):
+        return __dbmanager__.update_data(lab_book_id, update_data)
