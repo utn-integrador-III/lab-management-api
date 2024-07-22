@@ -313,7 +313,6 @@ definitions:
       - "student_email"
       - "student_name"
       - "computer"
-      - "usage_time"
     properties:
       lab_book_id:
         type: string
@@ -327,9 +326,6 @@ definitions:
       computer:
         type: string
         example: "pc-1"
-      usage_time:
-        type: string
-        example: "{ \"$date\": { \"$numberLong\": \"1718557800000\" } }"
   ProfessorGetByEmail:
     type: object
     properties:
@@ -949,91 +945,88 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"   
-      put:
-        tags:
-          - "Booking"
-        summary: "Update a lab booking with new student information"
-        description: "This endpoint updates a lab booking by adding a new student with the provided information."
-        parameters:
-          - in: "body"
-            name: "body"
-            description: "Booking object that needs to be updated"
-            required: true
+       
+  /booking/computer:
+    delete:
+      tags:
+        - "Booking"
+      summary: "Eliminar una reserva de computadora"
+      description: "Este endpoint es utilizado por los estudiantes para eliminar una reserva. Elimina al estudiante para una computadora específica en la colección `lab_book`."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          description: "Datos necesarios para eliminar una reserva"
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: "ID del laboratorio"
+              student_email:
+                type: string
+                description: "Email del estudiante"
+              computer:
+                type: string
+                description: "Nombre o identificador de la computadora"
+            required:
+              - id
+              - student_email
+              - computer
+      responses:
+        '200':
+          description: "Reserva eliminada exitosamente"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Reserva eliminada exitosamente"
+              message_code:
+                type: string
+                example: "RESERVA_ELIMINADA_EXITOSAMENTE"
+        "401":
+            description: "Unauthorized"
             schema:
-              $ref: "#/definitions/BookingPut"
-        responses:
-          "200":
-            description: "Computer booked successfully"
-            schema:
-              type: object
-              properties:
-                data:
-                  type: array
-                  items:
-                    $ref: "#/definitions/BookingPut"
-                message:
-                  type: string
-                  example: "Computer booked successfully"
-                message_code:
-                  type: string
-                  example: "LAB_SUCCESSFULLY_UPDATED"
-          "400":
-            description: "Validation Error"
-            schema:
-              type: object
-              properties:
-                data:
-                  type: string
-                  example: null
-                message:
-                  type: string
-                  example: "Invalid update data: missing key 'computer'"
-                message_code:
-                  type: string
-                  example: "INCORRECT_REQUEST_PARAM"
-          "404":
-            description: "Lab book not found"
-            schema:
-              type: object
-              properties:
-                data:
-                  type: string
-                  example: null
-                message:
-                  type: string
-                  example: "Lab book not found"
-                message_code:
-                  type: string
-                  example: "LAB_NOT_FOUND"
-          "409":
-            description: "Computer already booked"
-            schema:
-              type: object
-              properties:
-                data:
-                  type: string
-                  example: null
-                message:
-                  type: string
-                  example: "Computer already booked"
-                message_code:
-                  type: string
-                  example: "CONFLICT_MSG"
-          "500":
-            description: "Internal Server Error"
-            schema:
-              type: object
-              properties:
-                data:
-                  type: string
-                  example: null
-                message:
-                  type: string
-                  example: "Error retrieving lab book: Invalid ObjectId: 66882fc47495a27748ac7b"
-                message_code:
-                  type: string
-                  example: "INTERNAL_SERVER_ERROR_MSG"
-    put:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
+        '400':
+          description: "Solicitud incorrecta, faltan datos requeridos"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Faltan datos requeridos"
+              message_code:
+                type: string
+                example: "DATOS_REQUERIDOS_FALTANTES"
+        '500':
+          description: "Error interno del servidor"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error interno del servidor"
+              message_code:
+                type: string
+                example: "ERROR_INTERNO_SERVIDOR"  
+    post:
       tags:
         - "Booking"
       summary: "Update a lab booking with new student information"
@@ -1121,87 +1114,6 @@ paths:
               message_code:
                 type: string
                 example: "INTERNAL_SERVER_ERROR_MSG"
-       
-  /booking/computer:
-    delete:
-      tags:
-        - "Booking"
-      summary: "Eliminar una reserva de computadora"
-      description: "Este endpoint es utilizado por los estudiantes para eliminar una reserva. Elimina al estudiante para una computadora específica en la colección `lab_book`."
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: Authorization
-          in: header
-          description: an authorization header
-          required: true
-          type: string
-        - in: "body"
-          name: "body"
-          description: "Datos necesarios para eliminar una reserva"
-          required: true
-          schema:
-            type: object
-            properties:
-              id:
-                type: string
-                description: "ID del laboratorio"
-              student_email:
-                type: string
-                description: "Email del estudiante"
-              computer:
-                type: string
-                description: "Nombre o identificador de la computadora"
-            required:
-              - id
-              - student_email
-              - computer
-      responses:
-        '200':
-          description: "Reserva eliminada exitosamente"
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Reserva eliminada exitosamente"
-              message_code:
-                type: string
-                example: "RESERVA_ELIMINADA_EXITOSAMENTE"
-        "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
-        '400':
-          description: "Solicitud incorrecta, faltan datos requeridos"
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Faltan datos requeridos"
-              message_code:
-                type: string
-                example: "DATOS_REQUERIDOS_FALTANTES"
-        '500':
-          description: "Error interno del servidor"
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Error interno del servidor"
-              message_code:
-                type: string
-                example: "ERROR_INTERNO_SERVIDOR"  
   /professor/byemail:
     get:
       tags:
