@@ -1,30 +1,11 @@
-
-import datetime
-import traceback
 from flask_restful import Resource
-from flask import config, request
+from flask import request
 from utils.server_response import *
 from utils.message_codes import *
 from models.booking.model import BookingModel
 import logging
 import re
-from bson import ObjectId
-from pymongo.errors import ServerSelectionTimeoutError
-
-
-
-def convert_object(obj):
-    if isinstance(obj, list):
-        return [convert_object(item) for item in obj]
-    elif isinstance(obj, dict):
-        return {key: convert_object(value) for key, value in obj.items()}
-    elif isinstance(obj, (datetime.date, datetime.datetime)):
-        return obj.isoformat()
-    elif isinstance(obj, ObjectId):
-        return str(obj)
-    else:
-        return obj
-
+from utils.auth_manager import auth_required
 
 class BookingController(Resource):
     route = "/booking"
@@ -32,11 +13,15 @@ class BookingController(Resource):
     """
     Create a new booking 
     """
-
-
-
-
-    def post(self):
+    @auth_required(permission='write', with_args=True)
+    def post(self,**kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
         try:
             data = request.get_json()
             if not data.get("professor"):
@@ -103,4 +88,3 @@ class BookingController(Resource):
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
 
-    
