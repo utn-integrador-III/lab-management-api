@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from utils.server_response import ServerResponse, StatusCode
-from utils.message_codes import ISSUE_LAB_REQUIRED, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_REPORT_TO_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_STATUS_REQUIRED, ISSUE_UPDATE_REQUIRED, LAB_ALREADY_EXIST, ISSUE_SUCCESSFULLY_CREATED
+from utils.message_codes import ISSUE_LAB_REQUIRED, ISSUE_NOT_FOUND, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_REPORT_TO_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_STATUS_REQUIRED, ISSUE_SUCCESSFULLY_DELETED, ISSUE_UPDATE_REQUIRED, LAB_ALREADY_EXIST, ISSUE_SUCCESSFULLY_CREATED, NO_DATA
 from models.issue.model import IssueModel
 from utils.auth_manager import auth_required
 import logging
@@ -9,6 +9,52 @@ from datetime import datetime
 
 class IssueController(Resource):
     route = "/issue"
+
+
+    """
+    Get all issue 
+    """
+    @auth_required(permission='read', with_args=True)
+    def get(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
+        try:
+            Issues = IssueModel.get_all()
+            if isinstance(Issues, dict) and "error" in Issues:
+                return ServerResponse(
+                    data={},
+                    message=Issues["error"],
+                    status=StatusCode.INTERNAL_SERVER_ERROR,
+                )
+
+            if not Issues:
+                return ServerResponse(
+                    data={},
+                    message="No Issues found",
+                    message_codes=NO_DATA,
+                    status=StatusCode.OK,
+                )
+
+            # Convert ObjectId and datetime to string
+            for issue in Issues:
+                issue["_id"] = str(issue["_id"])
+                if isinstance(issue["date_issue"], datetime):
+                    issue["date_issue"] = issue["date_issue"].isoformat()
+                if isinstance(issue["notification_date"], datetime):
+                    issue["notification_date"] = issue["notification_date"].isoformat()
+                for update_item in issue.get("update", []):
+                    if isinstance(update_item, dict) and isinstance(update_item.get("date"), datetime):
+                        update_item["date"] = update_item["date"].isoformat()
+
+            return ServerResponse(data=Issues, status=StatusCode.OK)
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
 
     """
     Create a new issue 
@@ -114,8 +160,8 @@ class IssueController(Resource):
                     update_item["date"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
             # Validate if the laboratory already exists by ID
-            labs_exists = IssueModel.get_by_name(data.get("lab"))
-            if labs_exists:
+            Issue_exists = IssueModel.get_by_name(data.get("lab"))
+            if Issue_exists:
                 return ServerResponse(message='Issue already exists', 
                                       message_code=LAB_ALREADY_EXIST, status=StatusCode.CONFLICT)
 
@@ -123,6 +169,45 @@ class IssueController(Resource):
             lab_issue = IssueModel.create(data)
             return ServerResponse(lab_issue.to_dict(), message="Issue successfully created", 
                                   message_code=ISSUE_SUCCESSFULLY_CREATED, status=StatusCode.CREATED)
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
+    """
+    Delete a issue 
+    """
+    @auth_required(permission='delete', with_args=True)
+    def delete(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
+        try:
+            data = request.get_json()
+            _id = data.get('_id')
+
+            if not _id:
+                return ServerResponse(
+                    message='ID is required',
+                    status=StatusCode.BAD_REQUEST
+                )
+
+            deleted = IssueModel.delete_if_pending(_id)
+            if deleted:
+                return ServerResponse(
+                    message='Issue successfully deleted',
+                    message_code=ISSUE_SUCCESSFULLY_DELETED,
+                    status=StatusCode.OK
+                )
+            else:
+                return ServerResponse(
+                    message='Issue not found or status is not pending',
+                    message_code=ISSUE_NOT_FOUND,
+                    status=StatusCode.NOT_FOUND
+                )
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)

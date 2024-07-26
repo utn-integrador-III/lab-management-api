@@ -1,4 +1,3 @@
-from distutils import errors
 from bson import ObjectId
 from bson.errors import InvalidId  # Import InvalidId class
 
@@ -55,3 +54,30 @@ class IssueModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to get zone by lab_name: " + str(ex))
+        
+    @classmethod
+    def get_all(cls):
+        try:
+            info_db = []
+            response = __dbmanager__.get_all_data()
+            for info in response:
+                info_db.append(info)
+            return info_db
+        except Exception as ex:
+            raise Exception(ex)
+        
+    @classmethod
+    def delete_if_pending(cls, _id):
+        try:
+            object_id = ObjectId(_id)
+            issue = __dbmanager__.find_one({"_id": object_id})
+            if issue and issue.get("status") == "Pending":
+                __dbmanager__.delete_data(object_id)
+                return True
+            return False
+        except InvalidId:
+            raise Exception("Invalid ID format")
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to delete issue: " + str(ex))
+        
