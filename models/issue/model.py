@@ -7,7 +7,7 @@ import logging
 
 class IssueModel:
 
-    def __init__(self, lab=None, date_issue=None, _id=None, person=None, issue=None, report_to=None, observations=None, notification_date=None,
+    def __init__(self, lab=None, date_issue=None, _id=None, person=None, issue=None, report_to=None, observations=None,
                  status=None, update=None):
         self.lab = lab
         self.date_issue = date_issue
@@ -16,10 +16,8 @@ class IssueModel:
         self.issue = issue
         self.report_to=report_to
         self.observations = observations
-        self.notification_date=notification_date
         self.status = status
         self.update=update
-
 
     def to_dict(self):
         return {
@@ -29,7 +27,6 @@ class IssueModel:
             "issue": self.issue,
             "report_to": self.report_to,
             "observations": self.observations,
-            "notification_date": self.notification_date,
             "status": self.status,
             "update": self.update
         }

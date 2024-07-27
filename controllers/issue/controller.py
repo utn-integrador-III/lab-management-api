@@ -45,8 +45,6 @@ class IssueController(Resource):
                 issue["_id"] = str(issue["_id"])
                 if isinstance(issue["date_issue"], datetime):
                     issue["date_issue"] = issue["date_issue"].isoformat()
-                if isinstance(issue["notification_date"], datetime):
-                    issue["notification_date"] = issue["notification_date"].isoformat()
                 for update_item in issue.get("update", []):
                     if isinstance(update_item, dict) and isinstance(update_item.get("date"), datetime):
                         update_item["date"] = update_item["date"].isoformat()
@@ -77,9 +75,6 @@ class IssueController(Resource):
                 return ServerResponse(message='lab is required', 
                                       message_code=ISSUE_LAB_REQUIRED, status=StatusCode.BAD_REQUEST)
 
-            # Add current date for 'date_issue' and 'notification_date'
-            data["date_issue"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-            data["notification_date"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
             # Validate required field 'person'.
             if not data.get("person"):
@@ -108,30 +103,25 @@ class IssueController(Resource):
                 if not issue_item.get("description"):
                     return ServerResponse(message='description in issue is required', 
                                           message_code=ISSUE_REQUIRED, status=StatusCode.BAD_REQUEST)
+                # Set default value for 'is_repaired'
+                if 'is_repaired' not in issue_item:
+                    issue_item['is_repaired'] = False
                 
-                if "is_repaired" not in issue_item or not isinstance(issue_item["is_repaired"], bool):
-                    return ServerResponse(message='is_repaired in issue must be a boolean', 
-                                          message_code=ISSUE_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate required field 'report_to'.
-            if not data.get("report_to"):
-                return ServerResponse(message='report_to is required', 
-                                      message_code=ISSUE_REPORT_TO_REQUIRED, status=StatusCode.BAD_REQUEST)
+            # Set default values for optional fields
+            if 'report_to' not in data:
+                data['report_to'] = ""
+            if 'status' not in data:
+                data['status'] = "Pending"
+            if 'update' not in data:
+                data['update'] = []
+            
+            # Add current date for 'date_issue' and 'notification_date'
+            data["date_issue"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
             # Validate required field 'observations'.
             if not data.get("observations"):
                 return ServerResponse(message='observations is required', 
                                       message_code=ISSUE_OBSERVATIONS_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate required field 'status'.
-            if not data.get("status"):
-                return ServerResponse(message='status is required', 
-                                      message_code=ISSUE_STATUS_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate required field 'update'.
-            if not data.get("update"):
-                return ServerResponse(message='update is required', 
-                                      message_code=ISSUE_UPDATE_REQUIRED, status=StatusCode.BAD_REQUEST)
 
             # Validate that 'person' is a dictionary
             if not isinstance(data["person"], dict):
@@ -143,27 +133,10 @@ class IssueController(Resource):
                 return ServerResponse(message='issue must be a non-empty array', 
                                       message_code=ISSUE_REQUIRED, status=StatusCode.BAD_REQUEST)
 
-            # Verify that 'update' is an array and not empty
-            if not isinstance(data["update"], list) or len(data["update"]) == 0:
-                return ServerResponse(message='update must be a non-empty array', 
+            # Verify that 'update' is an array (no longer needs to be non-empty)
+            if not isinstance(data["update"], list):
+                return ServerResponse(message='update must be an array', 
                                       message_code=ISSUE_UPDATE_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate that each item in 'update' has 'observation'
-            for update_item in data["update"]:
-                if not update_item.get("observation"):
-                    return ServerResponse(message='Each update item must have an observation', 
-                                          message_code=ISSUE_UPDATE_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Add current date for 'update' items if not provided
-            for update_item in data["update"]:
-                if not update_item.get("date"):
-                    update_item["date"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-
-            # Validate if the laboratory already exists by ID
-            Issue_exists = IssueModel.get_by_name(data.get("lab"))
-            if Issue_exists:
-                return ServerResponse(message='Issue already exists', 
-                                      message_code=LAB_ALREADY_EXIST, status=StatusCode.CONFLICT)
 
             # Create and save the new laboratory issue
             lab_issue = IssueModel.create(data)
