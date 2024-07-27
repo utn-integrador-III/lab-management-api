@@ -1,4 +1,3 @@
-from distutils import errors
 from bson import ObjectId
 from bson.errors import InvalidId  # Import InvalidId class
 
@@ -8,7 +7,7 @@ import logging
 
 class IssueModel:
 
-    def __init__(self, lab=None, date_issue=None, _id=None, person=None, issue=None, report_to=None, observations=None, notification_date=None,
+    def __init__(self, lab=None, date_issue=None, _id=None, person=None, issue=None, report_to=None, observations=None,
                  status=None, update=None):
         self.lab = lab
         self.date_issue = date_issue
@@ -17,10 +16,8 @@ class IssueModel:
         self.issue = issue
         self.report_to=report_to
         self.observations = observations
-        self.notification_date=notification_date
         self.status = status
         self.update=update
-
 
     def to_dict(self):
         return {
@@ -30,7 +27,6 @@ class IssueModel:
             "issue": self.issue,
             "report_to": self.report_to,
             "observations": self.observations,
-            "notification_date": self.notification_date,
             "status": self.status,
             "update": self.update
         }
@@ -55,3 +51,30 @@ class IssueModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to get zone by lab_name: " + str(ex))
+        
+    @classmethod
+    def get_all(cls):
+        try:
+            info_db = []
+            response = __dbmanager__.get_all_data()
+            for info in response:
+                info_db.append(info)
+            return info_db
+        except Exception as ex:
+            raise Exception(ex)
+        
+    @classmethod
+    def delete_if_pending(cls, _id):
+        try:
+            object_id = ObjectId(_id)
+            issue = __dbmanager__.find_one({"_id": object_id})
+            if issue and issue.get("status") == "Pending":
+                __dbmanager__.delete_data(object_id)
+                return True
+            return False
+        except InvalidId:
+            raise Exception("Invalid ID format")
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to delete issue: " + str(ex))
+        

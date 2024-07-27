@@ -395,10 +395,6 @@ definitions:
       - "lab"
       - "person"
       - "issue"
-      - "report_to"
-      - "observations"
-      - "status"
-      - "update"
     properties:
       lab:
         type: "string"
@@ -426,7 +422,6 @@ definitions:
           required:
             - "computer"
             - "description"
-            - "is_repaired"
           properties:
             computer:
               type: "string"
@@ -436,38 +431,11 @@ definitions:
               type: "string"
               example: "The computer is not turning on."
               description: "Description of the issue."
-            is_repaired:
-              type: "boolean"
-              example: false
-              description: "Indicates whether the issue has been repaired."
-      report_to:
-        type: "string"
-        example: "Professor Smith"
-        description: "Name of the person to report the issue to."
+
       observations:
         type: "string"
         example: "No additional observations."
         description: "Additional observations related to the issue."
-      status:
-        type: "string"
-        example: "Open"
-        description: "Current status of the issue."
-      update:
-        type: "array"
-        items:
-          type: "object"
-          required:
-            - "observation"
-          properties:
-            observation:
-              type: "string"
-              example: "Issue acknowledged."
-              description: "Observation or update regarding the issue."
-            date:
-              type: "string"
-              format: "date-time"
-              example: "2024-07-18T12:00:00Z"
-              description: "Date of the update. If not provided, the current date is used."
 
   IssueResponse:
     type: "object"
@@ -475,14 +443,74 @@ definitions:
       data:
         type: "object"
         properties:
+          lab:
+            type: "string"
+          date_issue:
+            type: "string"
+            format: "date-time"
+          person:
+            $ref: "#/definitions/Person"
           issue:
-            $ref: "#/definitions/Issue"
+            type: "array"
+            items:
+              $ref: "#/definitions/IssueItem"
+          report_to:
+            type: "string"
+            example: ""
+          observations:
+            type: "string"
+            example: "No additional observations."
+          status:
+            type: "string"
+            example: "Pending"
+          update:
+            type: "array"
+            items:
+              $ref: "#/definitions/UpdateItem"
       message:
         type: "string"
         example: "Issue successfully created"
       message_code:
         type: "string"
         example: "ISSUE_SUCCESSFULLY_CREATED"
+        
+        
+  IssueResponseGetAll:
+    type: "object"
+    properties:
+      data:
+        type: "object"
+        properties:
+          lab:
+            type: "string"
+          date_issue:
+            type: "string"
+            format: "date-time"
+          person:
+            $ref: "#/definitions/Person"
+          issue:
+            type: "array"
+            items:
+              $ref: "#/definitions/IssueItem"
+          report_to:
+            type: "string"
+            example: ""
+          observations:
+            type: "string"
+            example: "No additional observations."
+          status:
+            type: "string"
+            example: "Pending"
+          update:
+            type: "array"
+            items:
+              $ref: "#/definitions/UpdateItem"
+      message:
+        type: "string"
+        example: "Successfully requested"
+      message_code:
+        type: "string"
+        example: "OK_MSG"
 
   IssueErrorResponse:
     type: "object"
@@ -495,18 +523,58 @@ definitions:
       message_code:
         type: "string"
 
-  IssueAlreadyExistsErrorResponse:
+  Person:
     type: "object"
+    required:
+      - "email"
+      - "student_name"
     properties:
-      data:
+      email:
         type: "string"
-        example: null
-      message:
+        format: "email"
+        example: "student@example.com"
+        description: "Email address of the person reporting the issue."
+      student_name:
         type: "string"
-        example: "Issue already exists"
-      message_code:
+        example: "John Doe"
+        description: "Name of the student reporting the issue."
+
+  IssueItem:
+    type: "object"
+    required:
+      - "computer"
+      - "description"
+      - "is_repaired"
+    properties:
+      computer:
         type: "string"
-        example: "LAB_ALREADY_EXIST"
+        example: "Computer 1"
+        description: "Name or ID of the computer."
+      description:
+        type: "string"
+        example: "The computer is not turning on."
+        description: "Description of the issue."
+      is_repaired:
+        type: "boolean"
+        example: false
+        description: "Indicates whether the issue has been repaired."
+
+  UpdateItem:
+    type: "object"
+    required:
+      - "observation"
+    properties:
+      observation:
+        type: "string"
+        example: "Issue acknowledged."
+        description: "Observation or update regarding the issue."
+      date:
+        type: "string"
+        format: "date-time"
+        example: "2024-07-18T12:00:00Z"
+        description: "Date of the update. If not provided, the current date is used."
+
+
 
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
@@ -1240,129 +1308,151 @@ paths:
       parameters:
         - name: Authorization
           in: header
-          description: an authorization header
+          description: "An authorization header"
           required: true
           type: string
-        - in: "body"
-          name: "body"
+        - in: body
+          name: body
           description: "Issue object that needs to be added"
           required: true
           schema:
-            type: "object"
-            required:
-              - "lab"
-              - "person"
-              - "issue"
-              - "report_to"
-              - "observations"
-              - "status"
-              - "update"
-            properties:
-              lab:
-                type: "string"
-                example: "Lab A"
-                description: "Name of the lab where the issue occurred."
-              person:
-                type: "object"
-                required:
-                  - "email"
-                  - "student_name"
-                properties:
-                  email:
-                    type: "string"
-                    format: "email"
-                    example: "student@example.com"
-                    description: "Email address of the person reporting the issue."
-                  student_name:
-                    type: "string"
-                    example: "John Doe"
-                    description: "Name of the student reporting the issue."
-              issue:
-                type: "array"
-                items:
-                  type: "object"
-                  required:
-                    - "computer"
-                    - "description"
-                    - "is_repaired"
-                  properties:
-                    computer:
-                      type: "string"
-                      example: "Computer 1"
-                      description: "Name or ID of the computer."
-                    description:
-                      type: "string"
-                      example: "The computer is not turning on."
-                      description: "Description of the issue."
-                    is_repaired:
-                      type: "boolean"
-                      example: false
-                      description: "Indicates whether the issue has been repaired."
-              report_to:
-                type: "string"
-                example: "Professor Smith"
-                description: "Name of the person to report the issue to."
-              observations:
-                type: "string"
-                example: "No additional observations."
-                description: "Additional observations related to the issue."
-              status:
-                type: "string"
-                example: "Open"
-                description: "Current status of the issue."
-              update:
-                type: "array"
-                items:
-                  type: "object"
-                  required:
-                    - "observation"
-                  properties:
-                    observation:
-                      type: "string"
-                      example: "Issue acknowledged."
-                      description: "Observation or update regarding the issue."
-                    date:
-                      type: "string"
-                      format: "date-time"
-                      example: "2024-07-18T12:00:00Z"
-                      description: "Date of the update. If not provided, the current date is used."
+            $ref: "#/definitions/Issue"
       responses:
         "201":
           description: "Issue successfully created"
           schema:
-            allOf:
-              - $ref: "#/definitions/Response"
-              - properties:
-                  data:
-                    type: "object"
-                    properties:
-                      lab_issue:
-                        type: "object"
-                        description: "Details of the created issue."
+            $ref: "#/definitions/IssueResponse"
         "400":
           description: "Bad Request - Missing or invalid parameters"
           schema:
             allOf:
-              - $ref: "#/definitions/ErrorResponse"
+              - $ref: "#/definitions/IssueErrorResponse"
               - properties:
                   message:
-                    example: "The lab is required"
+                    example: "lab is required"
                   message_code:
                     example: "ISSUE_LAB_REQUIRED"
-        "409":
-          description: "Conflict - Issue already exists"
+        "401":
+          description: "Unauthorized"
           schema:
             allOf:
               - $ref: "#/definitions/ErrorResponse"
               - properties:
                   message:
-                    example: "Issue already exists"
+                    example: "User Do not have the Required Permissions"
                   message_code:
-                    example: "LAB_ALREADY_EXIST"
+                    example: "UNAUTHORIZED"
         "500":
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+
+    get:
+      tags:
+        - "Issues"
+      summary: "Get all issues"
+      description: "Retrieve a list of all issues."
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: "An authorization header"
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "Successfully requested"
+          schema:
+            $ref: "#/definitions/IssueResponseGetAll"
+        
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
+    delete:
+      tags:
+        - "Issues"
+      summary: "Delete an issue"
+      description: "Delete an issue based on the provided ID."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: "An authorization header"
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: "Object containing the issue ID to delete"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              _id:
+                type: "string"
+                description: "ID of the issue to delete"
+                example: "64b5d6c9c9d0a5f831c0b3e8"
+      responses:
+        "200":
+          description: "Issue successfully deleted"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Issue successfully deleted"
+              message_code:
+                type: "string"
+                example: "ISSUE_SUCCESSFULLY_DELETED"
+        "400":
+          description: "Bad Request - Missing or invalid ID"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "ID is required"
+                
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+                    
+        "404":
+          description: "Not Found - Issue not found or status is not pending"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Issue not found or status is not pending"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
 
 externalDocs:
   description: "Find out more about Swagger"
