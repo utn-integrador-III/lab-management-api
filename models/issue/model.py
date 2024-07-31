@@ -41,18 +41,6 @@ class IssueModel:
             raise Exception("Failed to create lab: " + str(ex))
         
     @classmethod
-    def get_by_name(cls, lab):
-        try:
-            # Search for the lab by name in the database
-            result = __dbmanager__.find_one({"lab": lab})
-            if result:
-                return cls(_id=result.get("_id"), lab=result.get("lab"))
-            return None
-        except Exception as ex:
-            logging.exception(ex)
-            raise Exception("Failed to get zone by lab_name: " + str(ex))
-        
-    @classmethod
     def get_all(cls):
         try:
             info_db = []
