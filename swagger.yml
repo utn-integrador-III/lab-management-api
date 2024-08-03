@@ -1437,7 +1437,7 @@ paths:
   /issue:
     get:
         tags:
-          - "Issues"
+          - "Issue"
         summary: "Get all issues"
         description: "Retrieve a list of all issues."
         produces:
@@ -1471,7 +1471,7 @@ paths:
               $ref: "#/definitions/InternalErrorResponse"
     post:
       tags:
-        - "Issues"
+        - "Issue"
       summary: "Create a new issue"
       description: "Create a new issue with the specified details."
       consumes:
@@ -1519,10 +1519,10 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-  /issues/{issueId}:
+  /issue/{issueId}:
     get:
       tags:
-        - "Issues"
+        - "Issue"
       summary: "Find Issue by ID"
       description: "Returns a single Issue"
       parameters:
@@ -1580,7 +1580,7 @@ paths:
             $ref: "#/definitions/InternalErrorResponse"
     delete:
       tags:
-        - "Issues"
+        - "Issue"
       summary: "Delete an issue"
       description: "Delete an issue based on the provided ID."
       consumes:
@@ -1652,7 +1652,7 @@ paths:
   /issue/mngmt:
     put:
       tags:
-        - Issues
+        - Issue
       summary: Update an issue with new status, comments, and computer repair information
       description: |
         Updates the status of an issue, adds new comments, and updates computer repair status.
