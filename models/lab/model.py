@@ -1,7 +1,7 @@
 from distutils import errors
 from bson import ObjectId
 from bson.errors import InvalidId  # Import InvalidId class
-
+from pymongo import MongoClient
 from models.lab.db_queries import __dbmanager__
 import logging
 
@@ -95,3 +95,14 @@ class LabModel:
             return updated_zone
         else:
             return None
+        
+    @classmethod
+    def get_by_num(cls, lab_num):
+        try:
+            result = __dbmanager__.find_one({"lab_num": lab_num})
+            if result:
+                return cls(_id=result.get("_id"), lab_name=result.get("lab_name"), lab_num=result.get("lab_num"))
+            return None
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to get lab by lab_num: " + str(ex))
