@@ -573,6 +573,78 @@ definitions:
         format: "date-time"
         example: "2024-07-18T12:00:00Z"
         description: "Date of the update. If not provided, the current date is used."
+        
+  IssueUpdateComments:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: ID of the issue
+      status:
+        type: string
+        description: Status of the issue
+      new_update:
+        type: string
+        description: New update comment for the issue
+      computer:
+        type: array
+        items:
+          type: object
+          properties:
+            computer:
+              type: string
+              description: Computer identifier
+            is_repaired:
+              type: boolean
+              description: Repair status of the computer
+  UpdateResponseComments:
+    type: object
+    properties:
+      message:
+        type: string
+        description: Response message
+      status:
+        type: integer
+        description: HTTP status code
+      message_code:
+        type: string
+        description: Code representing the message
+  ErrorResponseComments:
+    type: object
+    properties:
+      message:
+        type: string
+        description: Error message
+      status:
+        type: integer
+        description: HTTP status code
+      message_code:
+        type: string
+        description: Code representing the message
+  ExamplePendingIssue:
+    type: object
+    example:
+      _id: "66aac67fa9dc76dc722237ce"
+      computer: []
+      status: "Pending"
+      new_update: "Se procedió a la revisión, se detecta problemas en actualización de windows"
+  ExampleActiveIssue:
+    type: object
+    example:
+      _id: "66aac67fa9dc76dc722237ce"
+      computer:
+        - computer: "pc-03"
+          is_repaired: true
+      status: "Active"
+      new_update: "Se procedió a la revisión, se detecta problemas en actualización de windows"
+  ExampleCancelledIssue:
+    type: object
+    example:
+      _id: "66aac67fa9dc76dc722237ce"
+      computer: []
+      status: "Cancelled"
+      new_update: "Se procedió a la revisión, se detecta problemas en actualización de windows"
+
 
 
 
@@ -1452,6 +1524,87 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+    
+  /issue/mngmt:
+    put:
+      tags:
+        - Issues
+      summary: Update an issue with new status, comments, and computer repair information
+      description: |
+        Updates the status of an issue, adds new comments, and updates computer repair status.
+        Status can be 'Cancelled', 'Active', or 'Pending'. If all computers are repaired, the status changes to 'Done'.
+      parameters:
+        - name: Authorization
+          in: header
+          description: "An authorization header"
+          required: true
+          type: string
+        - in: body
+          name: issue
+          description: Issue object that needs to be updated
+          required: true
+          schema:
+              $ref: '#/definitions/ExampleActiveIssue'
+
+      responses:
+        200:
+          description: Issue successfully updated
+          schema:
+            $ref: '#/definitions/UpdateResponseComments'
+          examples:
+            application/json:
+              {
+                "message": "Issue successfully updated",
+                "status": 200,
+                "message_code": "ISSUE_SUCCESSFULLY_UPDATED"
+              }
+        
+        204:
+          description: No changes detected
+          schema:
+            $ref: '#/definitions/ErrorResponseComments'
+          examples:
+            application/json:
+              {
+                "message": "No changes detected",
+                "status": 204,
+                "message_code": "ISSUE_UPDATE_REQUIRED"
+              }
+        
+        400:
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/ErrorResponseComments'
+          examples:
+            application/json:
+              {
+                "message": "ID is required",
+                "status": 400,
+                "message_code": "ISSUE_ID_REQUIRED"
+              }
+        404:
+          description: Issue not found
+          schema:
+            $ref: '#/definitions/ErrorResponseComments'
+          examples:
+            application/json:
+              {
+                "message": "Issue not found",
+                "status": 404,
+                "message_code": "ISSUE_NOT_FOUND"
+              }
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ErrorResponseComments'
+          examples:
+            application/json:
+              {
+                "message": "Internal server error",
+                "status": 500,
+                "message_code": "INTERNAL_SERVER_ERROR"
+              }
+
 
 
 externalDocs:
