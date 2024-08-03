@@ -1452,8 +1452,113 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-
-
+    
+    put:
+      tags:
+        - "Issues"
+      summary: "Update an existing issue"
+      description: "Update an issue with the provided details."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: "An authorization header"
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: "Issue object that needs to be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              _id:
+                type: "string"
+                description: "ID of the issue to update"
+                example: "6672fe471f3cf27f746c67e4"
+              user_email:
+                type: "string"
+                description: "Email of the user associated with the issue"
+                example: "chcamonael@est.utn.ac.cr"
+              issue:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    computer:
+                      type: "string"
+                      example: "pc-03"
+                    description:
+                      type: "string"
+                      example: "No carga el docker y problemas de conectividad"
+                    is_repaired:
+                      type: "boolean"
+                      example: true
+              observations:
+                type: "string"
+                example: "Sin observaciones"
+      responses:
+        "200":
+          description: "Issue successfully updated"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Issue updated successfully"
+              message_code:
+                type: "string"
+                example: "ISSUE_UPDATED"
+        "400":
+          description: "Bad Request - Missing or invalid parameters"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Required fields are missing"
+              message_code:
+                type: "string"
+                example: "MISSING_FIELDS"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "403":
+          description: "Forbidden - Cannot update issue"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Cannot update issue"
+              message_code:
+                type: "string"
+                example: "UPDATE_FORBIDDEN"
+        "404":
+          description: "Not Found - Issue not found"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Issue not found"
+              message_code:
+                type: "string"
+                example: "ISSUE_NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

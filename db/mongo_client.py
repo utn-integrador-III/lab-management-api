@@ -51,9 +51,10 @@ class Connection:
         except Exception as e:
             return e
 
-    def update_data(self, filter_id, new_data):
+    def update_data(self, id, new_data):
         try:
-            self.collection.update_one({"_id": ObjectId(filter_id)}, {"$set": new_data})
+            result = self.collection.update_one({"_id": ObjectId(id)}, {"$set": new_data})
+            return result  # Devuelve el objeto de resultado de actualización
         except Exception as e:
             logging.exception(e)
             raise e
@@ -61,7 +62,7 @@ class Connection:
     def update_data(self, id, new_data):
         try:
             result = self.collection.update_one({"_id": ObjectId(id)}, {"$set": new_data})
-            return result.modified_count > 0
+            return result
         except Exception as e:
             logging.exception(e)
             return str(e)

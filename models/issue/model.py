@@ -66,3 +66,26 @@ class IssueModel:
             logging.exception(ex)
             raise Exception("Failed to delete issue: " + str(ex))
         
+    @classmethod
+    def find_by_id(cls, _id):
+        try:
+            object_id = ObjectId(_id)
+            issue = __dbmanager__.find_one({"_id": object_id})
+            if issue:
+                return issue
+            else:
+                return None
+        except InvalidId:
+            raise Exception("Invalid ID format")
+        except Exception as ex:
+            logging.exception("Error in find_by_id")
+            raise
+
+    @classmethod
+    def update(cls, id, new_data):
+        try:
+            result = __dbmanager__.update_data(id, new_data)
+            return result
+        except Exception as e:
+            logging.exception(e)
+            raise
