@@ -1559,29 +1559,18 @@ paths:
                 "message_code": "ISSUE_SUCCESSFULLY_UPDATED"
               }
         
-        204:
-          description: No changes detected
-          schema:
-            $ref: '#/definitions/ErrorResponseComments'
-          examples:
-            application/json:
-              {
-                "message": "No changes detected",
-                "status": 204,
-                "message_code": "ISSUE_UPDATE_REQUIRED"
-              }
-        
         400:
-          description: Invalid input
+          description: Invalid input or No changes detected
           schema:
             $ref: '#/definitions/ErrorResponseComments'
           examples:
             application/json:
               {
-                "message": "ID is required",
+                "message": "ID is required or no changes detected",
                 "status": 400,
                 "message_code": "ISSUE_ID_REQUIRED"
               }
+            
         404:
           description: Issue not found
           schema:

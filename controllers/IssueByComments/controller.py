@@ -60,7 +60,7 @@ class IssueByCommentsController(Resource):
             elif not new_update:
                 return ServerResponse(
                     message='No changes detected',
-                    status=StatusCode.NO_CONTENT,
+                    status=StatusCode.BAD_REQUEST,
                     message_code= ISSUE_UPDATE_REQUIRED
                 )
 
