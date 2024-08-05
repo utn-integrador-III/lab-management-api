@@ -3,7 +3,7 @@ from bson.errors import InvalidId  # Import InvalidId class
 
 from models.issue.db_queries import __dbmanager__
 import logging
-
+from pymongo.errors import ServerSelectionTimeoutError
 
 class IssueModel:
 
@@ -65,27 +65,23 @@ class IssueModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to delete issue: " + str(ex))
-        
-    @classmethod
-    def find_by_id(cls, _id):
+    
+    @staticmethod
+    def find_by_id(lab_book_id):
         try:
-            object_id = ObjectId(_id)
-            issue = __dbmanager__.find_one({"_id": object_id})
-            if issue:
-                return issue
-            else:
-                return None
-        except InvalidId:
-            raise Exception("Invalid ID format")
-        except Exception as ex:
-            logging.exception("Error in find_by_id")
-            raise
-
-    @classmethod
-    def update(cls, id, new_data):
+            return __dbmanager__.get_by_id(lab_book_id)
+        except ServerSelectionTimeoutError as e:
+            logging.error(f"Database connection error: {e}")
+            raise   
+    
+    @staticmethod
+    def update(issue_id, data):
         try:
-            result = __dbmanager__.update_data(id, new_data)
+            result = __dbmanager__.update_data(issue_id, data)
+            if not result:
+                raise Exception("Failed to update issue: No changes were made.")
             return result
-        except Exception as e:
-            logging.exception(e)
-            raise
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to update issue: " + str(ex))
+        

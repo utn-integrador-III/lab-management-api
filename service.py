@@ -1,4 +1,5 @@
 from flask_restful import Resource
+from controllers.IssueByComments.controller import IssueByCommentsController
 from controllers.booking.controller import BookingController
 from controllers.health.controller import HealthController
 from controllers.issue.controller import IssueController
@@ -30,3 +31,4 @@ def addServiceLayer(api: Api):
 
     # Issue
     api.add_resource(IssueController, IssueController.route)
+    api.add_resource(IssueByCommentsController, IssueByCommentsController.route)
