@@ -3,6 +3,7 @@ from controllers.IssueByComments.controller import IssueByCommentsController
 from controllers.booking.controller import BookingController
 from controllers.health.controller import HealthController
 from controllers.issue.controller import IssueController
+from controllers.issueId.controller import IssueByIdController
 from controllers.lab.controller import LabController
 from controllers.labbyId.controller import LabByIdController
 from controllers.booking.controller import BookingController
@@ -31,4 +32,6 @@ def addServiceLayer(api: Api):
 
     # Issue
     api.add_resource(IssueController, IssueController.route)
+    api.add_resource(IssueByIdController, IssueByIdController.route)
     api.add_resource(IssueByCommentsController, IssueByCommentsController.route)
+

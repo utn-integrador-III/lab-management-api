@@ -52,6 +52,20 @@ class IssueModel:
             raise Exception(ex)
         
     @classmethod
+    def get_by_id(cls, _id):
+        try:
+            object_id = ObjectId(_id)
+            issue = __dbmanager__.find_one({"_id": object_id})
+            if issue:
+                return issue
+            return None
+        except InvalidId:
+            raise Exception("Invalid ID format")
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to get issue by ID: " + str(ex))
+        
+    @classmethod
     def delete_if_pending(cls, _id):
         try:
             object_id = ObjectId(_id)
