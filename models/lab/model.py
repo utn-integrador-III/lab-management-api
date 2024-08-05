@@ -36,7 +36,14 @@ class LabModel:
 
     @classmethod
     def get_by_lab_num(cls, lab_num):
-        return None
+        try:
+            result = __dbmanager__.find_one({"lab_num": lab_num})
+            if result:
+                return cls(_id=result.get("_id"), lab_name=result.get("lab_name"), lab_num=result.get("lab_num"))
+            return None
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to get lab by lab_num: " + str(ex))
 
     @classmethod
     def get_by_name(cls, lab_name):
@@ -95,3 +102,14 @@ class LabModel:
             return updated_zone
         else:
             return None
+        
+    @classmethod
+    def get_by_num(cls, lab_num):
+        try:
+            result = __dbmanager__.find_one({"lab_num": lab_num})
+            if result:
+                return cls(_id=result.get("_id"), lab_name=result.get("lab_name"), lab_num=result.get("lab_num"))
+            return None
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to get lab by lab_num: " + str(ex))
