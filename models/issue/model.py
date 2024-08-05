@@ -84,4 +84,3 @@ class IssueModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to update issue: " + str(ex))
-        
