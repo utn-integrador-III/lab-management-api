@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from utils.server_response import ServerResponse, StatusCode
-from utils.message_codes import ISSUE_LAB_REQUIRED, ISSUE_NOT_FOUND, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_REPORT_TO_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_STATUS_REQUIRED, ISSUE_SUCCESSFULLY_DELETED, ISSUE_UPDATE_REQUIRED, LAB_ALREADY_EXIST, ISSUE_SUCCESSFULLY_CREATED, NO_DATA
+from utils.message_codes import ISSUE_LAB_REQUIRED, ISSUE_NOT_FOUND, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_REPORT_TO_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_STATUS_REQUIRED, ISSUE_SUCCESSFULLY_DELETED, ISSUE_UPDATE_REQUIRED, LAB_ALREADY_EXIST, ISSUE_SUCCESSFULLY_CREATED, NO_DATA, UNAUTHORIZED, NO_CHANGES
 from models.issue.model import IssueModel
 from utils.auth_manager import auth_required
 import logging
@@ -184,3 +184,73 @@ class IssueController(Resource):
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
+    """
+    Update an existing issue
+    """
+    @auth_required(permission='write', with_args=True)
+    def put(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if not current_user:
+            return ServerResponse(
+                message="No user data available",
+                message_code=UNAUTHORIZED,
+                status=StatusCode.UNAUTHORIZED
+            )
+
+        try:
+            data = request.get_json()
+            issue_id = data.get('_id')
+            user_email = data.get('user_email')
+            observations = data.get('observations')
+            issue_details = data.get('issue')
+
+            if not issue_id or not user_email or not issue_details:
+                return ServerResponse(
+                    message="Required fields are missing",
+                    message_code="MISSING_FIELDS",
+                    status=StatusCode.BAD_REQUEST
+                )
+
+            issue = IssueModel.find_by_id(issue_id)
+            if not issue:
+                return ServerResponse(
+                    message="Issue not found",
+                    message_code=ISSUE_NOT_FOUND,
+                    status=StatusCode.NOT_FOUND
+                )
+
+            if issue['person']['email'] != user_email or issue['status'] != 'Pending':
+                return ServerResponse(
+                    message="Cannot update issue",
+                    message_code="UPDATE_FORBIDDEN",
+                    status=StatusCode.FORBIDDEN
+                )
+
+            update_fields = {
+                "observations": observations,
+                "issue": issue_details
+            }
+
+            result = IssueModel.update(issue_id, update_fields)
+
+            if result.modified_count == 1:
+                return ServerResponse(
+                    message="Issue updated successfully",
+                    message_code="ISSUE_UPDATED",
+                    status=StatusCode.OK
+                )
+            else:
+                return ServerResponse(
+                    message="No changes made",
+                    message_code=NO_CHANGES,
+                    status=StatusCode.NOT_FOUND
+                )
+
+        except Exception as e:
+            logging.error(f"An error occurred while updating the issue: {str(e)}", exc_info=True)
+            return ServerResponse(
+                message="An error occurred while updating the issue",
+                message_code="UPDATE_ERROR",
+                status=StatusCode.INTERNAL_SERVER_ERROR
+            )

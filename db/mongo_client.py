@@ -54,7 +54,7 @@ class Connection:
     def update_data(self, id, new_data):
         try:
             result = self.collection.update_one({"_id": ObjectId(id)}, {"$set": new_data})
-            return result.modified_count > 0
+            return result
         except Exception as e:
             logging.exception(e)
             raise Exception(e)
