@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from utils.server_response import ServerResponse, StatusCode
-from utils.message_codes import ISSUE_LAB_REQUIRED, ISSUE_NOT_FOUND, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_REPORT_TO_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_STATUS_REQUIRED, ISSUE_SUCCESSFULLY_DELETED, ISSUE_UPDATE_REQUIRED, LAB_ALREADY_EXIST, ISSUE_SUCCESSFULLY_CREATED, NO_DATA
+from utils.message_codes import ISSUE_EMAIL_REQUIRED, ISSUE_ID_REQUIRED, ISSUE_LAB_REQUIRED, ISSUE_NOT_FOUND, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_SUCCESSFULLY_DELETED, ISSUE_UPDATE_REQUIRED, ISSUE_SUCCESSFULLY_CREATED, ISUE_STATUS_PENDING, NO_DATA,ISSUE_SUCCESSFULLY_UPDATED,ISSUE_UNAUTHORIZED_ACTION
 from models.issue.model import IssueModel
 from utils.auth_manager import auth_required
 import logging
@@ -184,3 +184,74 @@ class IssueController(Resource):
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
+    @auth_required(permission='write', with_args=True)
+    def put(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            print(f"Current user: {current_user}")
+        else:
+            print("No user data available")
+            
+        try:
+            data = request.get_json()
+            _id = data.get('_id')
+            issue_data = data.get('issue', [])
+            observations = data.get('observations')
+            email_user = data.get('email')
+
+            if not _id:
+                return ServerResponse(message='ID is required', status=StatusCode.BAD_REQUEST, message_code=ISSUE_ID_REQUIRED)
+
+            if not observations:
+                return ServerResponse(message='Observations are required', status=StatusCode.BAD_REQUEST, message_code=ISSUE_OBSERVATIONS_REQUIRED)
+
+            if not isinstance(issue_data, list) or not issue_data:
+                return ServerResponse(message='Issue data is required and must be a non-empty array', status=StatusCode.BAD_REQUEST, message_code=ISSUE_REQUIRED)
+
+            if not email_user:
+                return ServerResponse(message='Email is required', status=StatusCode.BAD_REQUEST, message_code=ISSUE_EMAIL_REQUIRED)
+
+            issue = IssueModel.find_by_id(_id)
+
+            if not issue:
+                return ServerResponse(message='Issue not found', status=StatusCode.NOT_FOUND)
+
+            if issue['status'] != 'Pending':
+                return ServerResponse(message='Issue status must be Pending', status=StatusCode.BAD_REQUEST, message_code=ISUE_STATUS_PENDING)
+
+            if issue.get("person", {}).get("email") != email_user:
+                return ServerResponse(message='Unauthorized action', status=StatusCode.UNAUTHORIZED, message_code=ISSUE_UNAUTHORIZED_ACTION)
+
+            # Update observations
+            issue["observations"] = observations
+
+            for item in issue_data:
+                if not item.get('computer') or not item.get('description'):
+                    return ServerResponse(message='Both computer and description are required and cannot be empty', status=StatusCode.BAD_REQUEST, message_code=ISSUE_REQUIRED)
+                item['is_repaired'] = False
+
+            issue["issue"] = issue_data
+
+            # Convert datetime fields to strings
+            if isinstance(issue.get("date_issue"), datetime):
+                issue["date_issue"] = issue["date_issue"].isoformat()
+            
+            for update_item in issue.get("update", []):
+                if isinstance(update_item.get("date"), datetime):
+                    update_item["date"] = update_item["date"].isoformat()
+
+            result = IssueModel.update_data(_id, issue)
+            if not result:
+                return ServerResponse(
+                    message='Failed to update issue: No changes were made.',
+                    status=StatusCode.BAD_REQUEST
+                )
+            issue['_id'] = str(issue['_id'])
+            return ServerResponse(data=issue, message="Issue successfully updated", status=StatusCode.OK, message_code=ISSUE_SUCCESSFULLY_UPDATED)
+
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
+

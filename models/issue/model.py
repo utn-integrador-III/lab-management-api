@@ -99,3 +99,17 @@ class IssueModel:
             logging.exception(ex)
             raise Exception("Failed to update issue: " + str(ex))
         
+    @classmethod    
+    def update_data(cls,issue_id, data):
+        try:
+            result = __dbmanager__.update_data(issue_id, data)
+            if not result:
+                raise Exception("Failed to update issue: No changes were made.")
+            return result
+        except InvalidId:
+            raise Exception("Invalid ID format")
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to update issue: " + str(ex))
+
+        
