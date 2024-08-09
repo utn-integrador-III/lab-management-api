@@ -711,7 +711,94 @@ definitions:
       computer: []
       status: "Cancelled"
       new_update: "Se procedió a la revisión, se detecta problemas en actualización de windows"
+      
+  IssueModifyAPending:
+    type: object
+    properties:
+      computer:
+        type: string
+        description: "Identificador de la computadora afectada."
+        example: "pc-03"
+      description:
+        type: string
+        description: "Descripción del problema reportado."
+        example: "No le sirve el Wifi ni el sonido"
+    required:
+      - computer
+      - description
 
+  IssueUpdateRequest:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: "Identificador único del issue."
+        example: "21213k1k31313kn312"
+      issue:
+        type: array
+        items:
+          $ref: "#/definitions/IssueModifyAPending"
+        description: "Lista de issues relacionados con las computadoras."
+      observations:
+        type: string
+        description: "Observaciones adicionales sobre el issue."
+        example: "Se avanzo con la pc-03"
+      email:
+        type: string
+        description: "Email del usuario que reporta el issue."
+        example: "student@example.com"
+      
+    required:
+      - _id
+      - issue
+      - observations
+      - email
+
+  IssueUpdateResponse:
+    type: object
+    properties:
+      _id:
+        type: string
+        description: "Identificador único del issue."
+        example: "21213k1k31313kn312"
+      lab:
+        type: string
+        description: "Identificador del lab"
+        example: "303"
+      person:
+        $ref: "#/definitions/Person"
+      issue:
+        type: array
+        items:
+          $ref: "#/definitions/IssueModifyAPending"
+        description: "Lista de issues relacionados con las computadoras."
+      observations:
+        type: string
+        description: "Observaciones adicionales sobre el issue."
+        example: "Se avanzo con la pc-03"
+      date_issue:
+        type: string
+        format: date-time
+        description: "Fecha y hora en que se creó el issue."
+      report_to:
+          type: "string"
+          example: "yarguedas@utn.ac.cr"
+      status:
+          type: "string"
+          example: "Pending"
+      update:
+          type: "array"
+          items:
+            $ref: "#/definitions/UpdateItem"
+    required:
+      - _id
+      - lab
+      - person
+      - issue
+      - observations
+      - date_issue
+      - status
+      - update
 
 
 
@@ -1519,65 +1606,63 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-  /issue/{issueId}:
-    get:
+    put:
+      summary: "Actualizar un issue existente"
+      description: "Actualiza la información de un issue existente en el sistema."
       tags:
         - "Issue"
-      summary: "Find Issue by ID"
-      description: "Returns a single Issue"
       parameters:
-        - name: "IssueId"
-          in: "path"
-          description: "ID of Issue to return"
-          required: true
-          type: "integer"
-          format: "integer"
         - name: Authorization
           in: header
-          description: an authorization header
+          description: "An authorization header"
           required: true
           type: string
+        - in: "body"
+          name: "body"
+          description: "Datos necesarios para actualizar el issue."
+          required: true
+          schema:
+            $ref: "#/definitions/IssueUpdateRequest"
       responses:
         "200":
-          description: "Successfully requested"
+          description: "Issue actualizado exitosamente."
           schema:
-            $ref: "#/definitions/IssueResponseGetAll"
+            $ref: "#/definitions/IssueUpdateResponse"
         "400":
-          description: "Bad Request"
+          description: "Solicitud incorrecta. Faltan campos requeridos o contienen errores."
           schema:
             allOf:
               - $ref: "#/definitions/ErrorResponse"
               - properties:
-                  data:
-                    $ref: "#/definitions/StudentGet"
                   message:
-                    example: "Server Couldn't Process the Request"
+                    example: "Solicitud incorrecta. Verifica los campos requeridos."
                   message_code:
                     example: "BAD_REQUEST"
         "401":
-          description: "Unauthorized"
+          description: "Acción no autorizada. El usuario no tiene permiso para actualizar el issue."
           schema:
             allOf:
               - $ref: "#/definitions/ErrorResponse"
               - properties:
                   message:
-                    example: "User Do not have the Required Permissions"
+                    example: "Usuario no autorizado para esta acción."
                   message_code:
-                    example: "UNAUTHORIZED"
+                    example: "ISSUE_UNAUTHORIZED_ACTION"
         "404":
-          description: "No Issue found"
+          description: "Issue no encontrado."
           schema:
             allOf:
               - $ref: "#/definitions/ErrorResponse"
               - properties:
                   message:
-                    example: "Issue not found"
+                    example: "Issue no encontrado."
                   message_code:
                     example: "NOT_FOUND"
         "500":
-          description: "Internal Server Error"
+          description: "Error interno del servidor."
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+            
     delete:
       tags:
         - "Issue"
@@ -1644,6 +1729,66 @@ paths:
               message:
                 type: "string"
                 example: "Issue not found or status is not pending"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+            
+  /issue/{issueId}:
+    get:
+      tags:
+        - "Issue"
+      summary: "Find Issue by ID"
+      description: "Returns a single Issue"
+      parameters:
+        - name: "issueId"
+          in: "path"
+          description: "ID of Issue to return"
+          required: true
+          type: "integer"
+          format: "integer"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "Successfully requested"
+          schema:
+            $ref: "#/definitions/IssueResponseGetAll"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "404":
+          description: "No Issue found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Issue not found"
+                  message_code:
+                    example: "NOT_FOUND"
         "500":
           description: "Internal Server Error"
           schema:
@@ -1717,6 +1862,7 @@ paths:
                 "status": 500,
                 "message_code": "INTERNAL_SERVER_ERROR"
               }
+    
 
 
 externalDocs:
