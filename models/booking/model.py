@@ -11,7 +11,8 @@ import logging
 from pymongo.errors import ServerSelectionTimeoutError
 
 class BookingModel:
-    def __init__(self, professor=None, professor_email=None, career=None, subject=None, lab=None, end_time=None, start_time=None, students=None, observations=None):
+    def __init__(self, _id=None, professor=None, professor_email=None, career=None, subject=None, lab=None, end_time=None, start_time=None, students=None, observations=None):
+        self._id = _id  # Añadido para manejar el campo _id
         self.professor = professor
         self.professor_email = professor_email
         self.career = career if career else {}
@@ -24,6 +25,7 @@ class BookingModel:
 
     def to_dict(self):
         return {
+            "_id": self._id,  # Incluye _id en el diccionario
             "professor": self.professor,
             "professor_email": self.professor_email,
             "career": self.career,
@@ -34,9 +36,18 @@ class BookingModel:
             "students": self.students,
             "observations": self.observations,
         }
+    
+    def to_json(self):
+        return {
+            'id': self.id,
+            'start_time': self.start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'end_time': self.end_time.strftime('%Y-%m-%d %H:%M:%S'),
+            # Add other fields here
+        }
 
     def to_json(self):
         return {
+            "_id": str(self._id) if self._id else None,  # Convertir _id a string para JSON
             "professor": self.professor,
             "professor_email": self.professor_email,
             "career": self.career,
@@ -62,6 +73,16 @@ class BookingModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to create booking: " + str(ex))
+        
+    @classmethod
+    def get_by_query(cls, query):
+        try:
+            results = __dbmanager__.get_by_query(query)
+            return [cls(**{k: v for k, v in result.items() if k != '_id'}) for result in results]
+        except Exception as ex:
+            logging.error(f"Error fetching bookings with query: {query} - {ex}")
+            raise Exception(f"Error fetching bookings with query: {query}")
+
 
     @classmethod
     def get_by_id(cls, id):
@@ -73,6 +94,7 @@ class BookingModel:
             raise ex
         except Exception as ex:
             raise Exception(f"Error fetching booking by id {id}: {ex}")
+        
 
     @staticmethod
     def _parse_datetime(date_str):
