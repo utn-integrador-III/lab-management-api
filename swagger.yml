@@ -265,6 +265,56 @@ definitions:
       observations:
         type: string
         example: ""
+  Booking:
+    type: object
+    properties:
+      _id:
+        type: string
+        example: "66882fc47495a27748ac7bb8"
+      professor:
+        type: string
+        example: "Ever Barahona Mendoza"
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      career:
+        type: object
+        additionalProperties: true
+      subject:
+        type: object
+        additionalProperties: true
+      lab:
+        type: integer
+        example: 302
+      end_time:
+        type: string
+        format: date-time
+        example: "2024-06-16T21:00:00"
+      start_time:
+        type: string
+        format: date-time
+        example: "2024-06-16T17:00:00"
+      students:
+        type: array
+        items:
+          type: object
+          properties:
+            student_email:
+              type: string
+              example: "ahidalgo@est.utn.ac.cr"
+            student_name:
+              type: string
+              example: "Ana Hidalgo"
+            computer:
+              type: string
+              example: "pc-01"
+            usage_time:
+              type: string
+              format: date-time
+              example: "2024-06-16T17:10:00"
+            observations:
+              type: string
+              example: ""
   BookingPost:
     type: object
     required:
@@ -1169,6 +1219,7 @@ paths:
           schema:
             $ref: "#/definitions/InternalErrorResponse"
   /booking:
+  
     post:
       tags:
         - "Booking"
@@ -1408,6 +1459,93 @@ paths:
               message_code:
                 type: string
                 example: "INTERNAL_SERVER_ERROR_MSG"
+                
+  /booking/{id}:
+    get:
+      tags:
+        - Booking
+      summary: Get a booking by ID
+      description: Retrieve the details of a booking by its ID.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the booking to retrieve
+          required: true
+          type: string  
+      responses:
+        '200':
+          description: Successfully retrieved the booking
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Booking'
+              message:
+                type: string
+                example: "Booking found"
+              message_code:
+                type: string
+                example: "OK_MSG"
+              status:
+                type: integer
+                example: 200
+        '400':
+          description: Invalid ID supplied
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+              message:
+                type: string
+                example: "Invalid booking ID"
+              message_code:
+                type: string
+                example: "INVALID_ID"
+              status:
+                type: integer
+                example: 400
+        
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                example: null
+              message:
+                type: string
+                example: "User Do not have the Required Permissions"
+              message_code:
+                type: string
+                example: "UNAUTHORIZED"
+        
+        
+        '404':
+          description: Booking not found
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+              message:
+                type: string
+                example: "Booking does not exist"
+              message_code:
+                type: string
+                example: "NO_DATA"
+              status:
+                type: integer
+                example: 200
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Internal server error"
   /professor/byemail:
     get:
       tags:
