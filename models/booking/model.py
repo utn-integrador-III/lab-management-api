@@ -1,6 +1,8 @@
 from datetime import datetime
 from bson import ObjectId
 from flask import config as flask_config
+from bson import ObjectId
+from bson.errors import InvalidId
 import pytz
 from utils.server_response import ServerResponse, StatusCode
 from utils.message_codes import *
@@ -60,6 +62,17 @@ class BookingModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to create booking: " + str(ex))
+
+    @classmethod
+    def get_by_id(cls, id):
+        try:
+            if not ObjectId.is_valid(id):
+                raise InvalidId(f"Invalid ObjectId: {id}")
+            return __dbmanager__.get_by_id(id)
+        except InvalidId as ex:
+            raise ex
+        except Exception as ex:
+            raise Exception(f"Error fetching booking by id {id}: {ex}")
 
     @staticmethod
     def _parse_datetime(date_str):
