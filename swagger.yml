@@ -1505,6 +1505,23 @@ paths:
               status:
                 type: integer
                 example: 400
+        
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                example: null
+              message:
+                type: string
+                example: "User Do not have the Required Permissions"
+              message_code:
+                type: string
+                example: "UNAUTHORIZED"
+        
+        
         '404':
           description: Booking not found
           schema:
