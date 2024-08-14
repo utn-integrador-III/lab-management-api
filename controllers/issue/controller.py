@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from utils.server_response import ServerResponse, StatusCode
-from utils.message_codes import ISSUE_LAB_REQUIRED, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_REPORT_TO_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_STATUS_REQUIRED, ISSUE_UPDATE_REQUIRED, LAB_ALREADY_EXIST, ISSUE_SUCCESSFULLY_CREATED
+from utils.message_codes import ISSUE_EMAIL_REQUIRED, ISSUE_ID_REQUIRED, ISSUE_LAB_REQUIRED, ISSUE_NOT_FOUND, ISSUE_PERSON_REQUIRED, ISSUE_REQUIRED, ISSUE_OBSERVATIONS_REQUIRED, ISSUE_SUCCESSFULLY_DELETED, ISSUE_UPDATE_REQUIRED, ISSUE_SUCCESSFULLY_CREATED, ISUE_STATUS_PENDING, NO_DATA,ISSUE_SUCCESSFULLY_UPDATED,ISSUE_UNAUTHORIZED_ACTION
 from models.issue.model import IssueModel
 from utils.auth_manager import auth_required
 import logging
@@ -9,6 +9,50 @@ from datetime import datetime
 
 class IssueController(Resource):
     route = "/issue"
+
+
+    """
+    Get all issue 
+    """
+    @auth_required(permission='read', with_args=True)
+    def get(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
+        try:
+            Issues = IssueModel.get_all()
+            if isinstance(Issues, dict) and "error" in Issues:
+                return ServerResponse(
+                    data={},
+                    message=Issues["error"],
+                    status=StatusCode.INTERNAL_SERVER_ERROR,
+                )
+
+            if not Issues:
+                return ServerResponse(
+                    data={},
+                    message="No Issues found",
+                    message_codes=NO_DATA,
+                    status=StatusCode.OK,
+                )
+
+            # Convert ObjectId and datetime to string
+            for issue in Issues:
+                issue["_id"] = str(issue["_id"])
+                if isinstance(issue["date_issue"], datetime):
+                    issue["date_issue"] = issue["date_issue"].isoformat()
+                for update_item in issue.get("update", []):
+                    if isinstance(update_item, dict) and isinstance(update_item.get("date"), datetime):
+                        update_item["date"] = update_item["date"].isoformat()
+
+            return ServerResponse(data=Issues, status=StatusCode.OK)
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
 
     """
     Create a new issue 
@@ -22,9 +66,6 @@ class IssueController(Resource):
                 return ServerResponse(message='lab is required', 
                                       message_code=ISSUE_LAB_REQUIRED, status=StatusCode.BAD_REQUEST)
 
-            # Add current date for 'date_issue' and 'notification_date'
-            data["date_issue"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-            data["notification_date"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
             # Validate required field 'person'.
             if not data.get("person"):
@@ -53,30 +94,25 @@ class IssueController(Resource):
                 if not issue_item.get("description"):
                     return ServerResponse(message='description in issue is required', 
                                           message_code=ISSUE_REQUIRED, status=StatusCode.BAD_REQUEST)
+                # Set default value for 'is_repaired'
+                if 'is_repaired' not in issue_item:
+                    issue_item['is_repaired'] = False
                 
-                if "is_repaired" not in issue_item or not isinstance(issue_item["is_repaired"], bool):
-                    return ServerResponse(message='is_repaired in issue must be a boolean', 
-                                          message_code=ISSUE_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate required field 'report_to'.
-            if not data.get("report_to"):
-                return ServerResponse(message='report_to is required', 
-                                      message_code=ISSUE_REPORT_TO_REQUIRED, status=StatusCode.BAD_REQUEST)
+            # Set default values for optional fields
+            if 'report_to' not in data:
+                data['report_to'] = ""
+            if 'status' not in data:
+                data['status'] = "Pending"
+            if 'update' not in data:
+                data['update'] = []
+            
+            # Add current date for 'date_issue' and 'notification_date'
+            data["date_issue"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
             # Validate required field 'observations'.
             if not data.get("observations"):
                 return ServerResponse(message='observations is required', 
                                       message_code=ISSUE_OBSERVATIONS_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate required field 'status'.
-            if not data.get("status"):
-                return ServerResponse(message='status is required', 
-                                      message_code=ISSUE_STATUS_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate required field 'update'.
-            if not data.get("update"):
-                return ServerResponse(message='update is required', 
-                                      message_code=ISSUE_UPDATE_REQUIRED, status=StatusCode.BAD_REQUEST)
 
             # Validate that 'person' is a dictionary
             if not isinstance(data["person"], dict):
@@ -88,27 +124,10 @@ class IssueController(Resource):
                 return ServerResponse(message='issue must be a non-empty array', 
                                       message_code=ISSUE_REQUIRED, status=StatusCode.BAD_REQUEST)
 
-            # Verify that 'update' is an array and not empty
-            if not isinstance(data["update"], list) or len(data["update"]) == 0:
-                return ServerResponse(message='update must be a non-empty array', 
+            # Verify that 'update' is an array (no longer needs to be non-empty)
+            if not isinstance(data["update"], list):
+                return ServerResponse(message='update must be an array', 
                                       message_code=ISSUE_UPDATE_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Validate that each item in 'update' has 'observation'
-            for update_item in data["update"]:
-                if not update_item.get("observation"):
-                    return ServerResponse(message='Each update item must have an observation', 
-                                          message_code=ISSUE_UPDATE_REQUIRED, status=StatusCode.BAD_REQUEST)
-
-            # Add current date for 'update' items if not provided
-            for update_item in data["update"]:
-                if not update_item.get("date"):
-                    update_item["date"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-
-            # Validate if the laboratory already exists by ID
-            labs_exists = IssueModel.get_by_name(data.get("lab"))
-            if labs_exists:
-                return ServerResponse(message='Issue already exists', 
-                                      message_code=LAB_ALREADY_EXIST, status=StatusCode.CONFLICT)
 
             # Create and save the new laboratory issue
             lab_issue = IssueModel.create(data)
@@ -117,3 +136,113 @@ class IssueController(Resource):
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
+    """
+    Delete a issue 
+    """
+    @auth_required(permission='delete', with_args=True)
+    def delete(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            # Proceed with access to current_user data
+            print(f"Current user: {current_user}")
+        else:
+            # Handle cases where current_user is not provided
+            print("No user data available")
+        try:
+            data = request.get_json()
+            _id = data.get('_id')
+
+            if not _id:
+                return ServerResponse(
+                    message='ID is required',
+                    status=StatusCode.BAD_REQUEST
+                )
+
+            deleted = IssueModel.delete_if_pending(_id)
+            if deleted:
+                return ServerResponse(
+                    message='Issue successfully deleted',
+                    message_code=ISSUE_SUCCESSFULLY_DELETED,
+                    status=StatusCode.OK
+                )
+            else:
+                return ServerResponse(
+                    message='Issue not found or status is not pending',
+                    message_code=ISSUE_NOT_FOUND,
+                    status=StatusCode.NOT_FOUND
+                )
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
+    @auth_required(permission='write', with_args=True)
+    def put(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            print(f"Current user: {current_user}")
+        else:
+            print("No user data available")
+            
+        try:
+            data = request.get_json()
+            _id = data.get('_id')
+            issue_data = data.get('issue', [])
+            observations = data.get('observations')
+            email_user = data.get('email')
+
+            if not _id:
+                return ServerResponse(message='ID is required', status=StatusCode.BAD_REQUEST, message_code=ISSUE_ID_REQUIRED)
+
+            if not observations:
+                return ServerResponse(message='Observations are required', status=StatusCode.BAD_REQUEST, message_code=ISSUE_OBSERVATIONS_REQUIRED)
+
+            if not isinstance(issue_data, list) or not issue_data:
+                return ServerResponse(message='Issue data is required and must be a non-empty array', status=StatusCode.BAD_REQUEST, message_code=ISSUE_REQUIRED)
+
+            if not email_user:
+                return ServerResponse(message='Email is required', status=StatusCode.BAD_REQUEST, message_code=ISSUE_EMAIL_REQUIRED)
+
+            issue = IssueModel.find_by_id(_id)
+
+            if not issue:
+                return ServerResponse(message='Issue not found', status=StatusCode.NOT_FOUND)
+
+            if issue['status'] != 'Pending':
+                return ServerResponse(message='Issue status must be Pending', status=StatusCode.BAD_REQUEST, message_code=ISUE_STATUS_PENDING)
+
+            if issue.get("person", {}).get("email") != email_user:
+                return ServerResponse(message='Unauthorized action', status=StatusCode.UNAUTHORIZED, message_code=ISSUE_UNAUTHORIZED_ACTION)
+
+            # Update observations
+            issue["observations"] = observations
+
+            for item in issue_data:
+                if not item.get('computer') or not item.get('description'):
+                    return ServerResponse(message='Both computer and description are required and cannot be empty', status=StatusCode.BAD_REQUEST, message_code=ISSUE_REQUIRED)
+                item['is_repaired'] = False
+
+            issue["issue"] = issue_data
+
+            # Convert datetime fields to strings
+            if isinstance(issue.get("date_issue"), datetime):
+                issue["date_issue"] = issue["date_issue"].isoformat()
+            
+            for update_item in issue.get("update", []):
+                if isinstance(update_item.get("date"), datetime):
+                    update_item["date"] = update_item["date"].isoformat()
+
+            result = IssueModel.update_data(_id, issue)
+            if not result:
+                return ServerResponse(
+                    message='Failed to update issue: No changes were made.',
+                    status=StatusCode.BAD_REQUEST
+                )
+            issue['_id'] = str(issue['_id'])
+            return ServerResponse(data=issue, message="Issue successfully updated", status=StatusCode.OK, message_code=ISSUE_SUCCESSFULLY_UPDATED)
+
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+
+

@@ -79,10 +79,10 @@ class LabController(Resource):
                                     message_code=LAB_COMPUTERS_REQUIRED, status=StatusCode.BAD_REQUEST)
 
 
-            # Validate if the laboratory already exists by name
-            labs_exists = LabModel.get_by_name(data.get("lab_name"))
-            if labs_exists:
-                return ServerResponse(message='lab already exists', 
+            # Validate if the laboratory already exists by num
+            lab_exists = LabModel.get_by_num(data.get("lab_num"))
+            if lab_exists:
+                return ServerResponse(message='lab_num already exists', 
                                     message_code=LAB_ALREADY_EXIST, status=StatusCode.CONFLICT)
 
             # Create and save the new laboratory

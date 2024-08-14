@@ -1,15 +1,18 @@
 from datetime import datetime
 from bson import ObjectId
-from flask import config as flask_config
+from bson import ObjectId
+from bson.errors import InvalidId
 import pytz
-from utils.server_response import ServerResponse, StatusCode
 from utils.message_codes import *
 from models.booking.db_queries import __dbmanager__, find_by_id, update
 import logging
 from pymongo.errors import ServerSelectionTimeoutError
+from datetime import datetime
+
 
 class BookingModel:
-    def __init__(self, professor=None, professor_email=None, career=None, subject=None, lab=None, end_time=None, start_time=None, students=None, observations=None):
+    def __init__(self, _id=None, professor=None, professor_email=None, career=None, subject=None, lab=None, end_time=None, start_time=None, students=None, observations=None):
+        self._id = _id
         self.professor = professor
         self.professor_email = professor_email
         self.career = career if career else {}
@@ -32,20 +35,7 @@ class BookingModel:
             "students": self.students,
             "observations": self.observations,
         }
-
-    def to_json(self):
-        return {
-            "professor": self.professor,
-            "professor_email": self.professor_email,
-            "career": self.career,
-            "subject": self.subject,
-            "lab": self.lab,
-            "end_time": self.end_time.isoformat() if self.end_time else None,
-            "start_time": self.start_time.isoformat() if self.start_time else None,
-            "students": self.students,
-            "observations": self.observations,
-        }
-
+    
     @classmethod
     def create(cls, data):
         try:
@@ -60,6 +50,26 @@ class BookingModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to create booking: " + str(ex))
+        
+    @classmethod
+    def get_by_query(cls, query):
+        try:
+            results = __dbmanager__.get_by_query(query)
+            return [cls(**doc).to_dict() for doc in results]
+        except Exception as ex:
+            logging.error(f"Error fetching bookings with query: {query} - {ex}")
+            raise Exception(f"Error fetching bookings with query: {query}")
+    @classmethod
+    def get_by_id(cls, id):
+        try:
+            if not ObjectId.is_valid(id):
+                raise InvalidId(f"Invalid ObjectId: {id}")
+            return __dbmanager__.get_by_id(id)
+        except InvalidId as ex:
+            raise ex
+        except Exception as ex:
+            raise Exception(f"Error fetching booking by id {id}: {ex}")
+        
 
     @staticmethod
     def _parse_datetime(date_str):
