@@ -2,19 +2,21 @@
 #about the .yml file.
 swagger: "2.0"
 info:
-  description: "Stuedent Service API's Documentation"
+  description: "Lab-Management API's Documentation"
   version: "1.0.0"
-  title: "Swagger Student Service API"
+  title: "Swagger Lab-Management API"
   termsOfService: "Terms"
   contact:
     email: "ebarahona@utn.ac.cr"
-host: "localhost:5001"
+host: "localhost:5003"
 basePath: "/booking_api"
 #The tags are the identifiers for the paths that are created, this will assign a path with a unique tag,
 #meaning that, an specific end-point belongs to a tag or identifier
 tags:
   - name: "Labs"
     description: "All Lab's Endpoints"
+  - name: "Booking"
+    description: "All Booking's Endpoints"
 #the schemes will define the protocol that are been used by the end-points inside the API
 schemes:
   - "https"
@@ -22,6 +24,39 @@ schemes:
 #The definitions will display the information that the end-points will return, all along with the
 #corresponding messages of the errors.
 definitions:
+  careerResponse:
+    type: object
+    properties:
+      career_id:
+        type: string
+        example: "ITI"
+      career_name:
+        type: string
+        example: "Tecnologia de la Informacion"
+  subjectResponse:
+    type: object
+    properties:
+      subject_id:
+        type: string
+        example: "ITI-412"
+      subject_name:
+        type: string
+        example: "Metodología Agiles de Desarrollo de Software"
+  StudentGet:
+    type: object
+    properties:
+      student_email:
+        type: string
+        example: "semataoe@est.utn.ac.cr"
+      student_name:
+        type: string
+        example: "Sebastian Mata"
+      computer:
+        type: string
+        example: "PC-01"
+      usage_time:
+        type: string
+        example: "2024-06-16T21:00:00.000+00:00"
   Response:
     type: object
     properties:
@@ -75,41 +110,416 @@ definitions:
       _id:
         type: string
         example: "0183IEHU#&#J"
-      LabID:
-        type: integer
-        example: 34
-      name:
+      lab_name:
         type: string
         example: "Laboratories"
-      description:
-        type: string
-        example: Laboratories Lab
+      lab_num:
+        type: number
+        example: 301
+      computers:
+        type: array
+        items:
+          type: string
+        example:
+          - "pc-01"
+          - "pc-02"
+          - "pc-03"
+          - "pc-04"
+          - "pc-05"
+          - "pc-06"
+          - "pc-07"
+          - "pc-08"
+          - "pc-09"
+          - "pc-10"
+          - "pc-11"
+          - "pc-12"
+          - "pc-13"
+          - "pc-14"
+          - "pc-15"
+          - "pc-16"
+          - "pc-17"
+          - "pc-18"
+          - "pc-19"
+          - "pc-20"
+          - "pc-21"
+          - "pc-22"
+          - "pc-23"
+          - "pc-24"
+          - "pc-25"
   LabGetById:
     type: object
     properties:
       _id:
-        type: integer
-        example: 34
-      name:
+        type: string
+        example: "0183IEHU#&#J"
+      lab_name:
         type: string
         example: "Laboratories"
+      lab_num:
+        type: number
+        example: 301
+      computers:
+        type: array
+        items:
+          type: string
+        example:
+          - "pc-01"
+          - "pc-02"
+          - "pc-03"
+          - "pc-04"
+          - "pc-05"
+          - "pc-06"
+          - "pc-07"
+          - "pc-08"
+          - "pc-09"
+          - "pc-10"
+          - "pc-11"
+          - "pc-12"
+          - "pc-13"
+          - "pc-14"
+          - "pc-15"
+          - "pc-16"
+          - "pc-17"
+          - "pc-18"
+          - "pc-19"
+          - "pc-20"
+          - "pc-21"
+          - "pc-22"
+          - "pc-23"
+          - "pc-24"
+          - "pc-25"
   LabPost:
     type: object
     required:
       - "name"
     properties:
-      name:
+      _id:
+        type: string
+        example: "0183IEHU#&#J"
+      lab_name:
         type: string
         example: "Laboratories"
-      description:
+      lab_num:
+        type: number
+        example: 301
+      computers:
+        type: array
+        items:
+          type: string
+        example:
+          - "pc-01"
+          - "pc-02"
+          - "pc-03"
+          - "pc-04"
+          - "pc-05"
+          - "pc-06"
+          - "pc-07"
+          - "pc-08"
+          - "pc-09"
+          - "pc-10"
+          - "pc-11"
+          - "pc-12"
+          - "pc-13"
+          - "pc-14"
+          - "pc-15"
+          - "pc-16"
+          - "pc-17"
+          - "pc-18"
+          - "pc-19"
+          - "pc-20"
+          - "pc-21"
+          - "pc-22"
+          - "pc-23"
+          - "pc-24"
+          - "pc-25"
+  BookingGet:
+    type: object
+    properties:
+      professor:
         type: string
-        example: "Laboratories Lab"
+        example: "Ever Barahona Mendoza"
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      career:
+        type: array
+        items:
+          $ref: "#/definitions/careerResponse"
+      subject:
+        type: array
+        items:
+          $ref: "#/definitions/subjectResponse"
+      lab:
+        type: integer
+        example: 412
+      end_time:
+        type: string
+        example: "2024-07-11T21:00:00-06:00"
+      start_time:
+        type: string
+        example: "2024-07-11T17:00:00-06:00"
+      students:
+        type: array
+        items:
+          $ref: "#/definitions/StudentGet"
+      observations:
+        type: string
+        example: ""
+  BookingPost:
+    type: object
+    required:
+      - "professor"
+      - "professor_email"
+      - "career"
+      - "subject"
+      - "lab"
+      - "end_time"
+      - "start_time"
+    properties:
+      professor:
+        type: string
+        example: "Ever Barahona Mendoza"
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      career:
+        type: array
+        items:
+          $ref: "#/definitions/careerResponse"
+      subject:
+        type: array
+        items:
+          $ref: "#/definitions/subjectResponse"
+      lab:
+        type: integer
+        example: 412
+      end_time:
+        type: string
+        example: "2024-07-11T21:00:00-06:00"
+      start_time:
+        type: string
+        example: "2024-07-11T17:00:00-06:00"
+      students:
+        type: array
+        items:
+          $ref: "#/definitions/StudentGet"
+      observations:
+        type: string
+        example: ""
+  BookingPut:
+    type: object
+    required:
+      - "lab_book_id"
+      - "student_email"
+      - "student_name"
+      - "computer"
+    properties:
+      lab_book_id:
+        type: string
+        example: "66882fc47495a27748ac7bb8"
+      student_email:
+        type: string
+        example: "alejandro@est.utn.ac.cr"
+      student_name:
+        type: string
+        example: "Alejandro Jose Rodríguez Jaen"
+      computer:
+        type: string
+        example: "pc-1"
+  ProfessorGetByEmail:
+    type: object
+    properties:
+      data:
+        properties:
+          professor_name:
+            type: string
+            example: "Juan Luis Bravo"
+          professor_email:
+            type: string
+            example: "juanluis@utn.ac.cr"
+          CareerId:
+            type: string
+            example: "ITI"
+          Career:
+            type: string
+            example: "Tecnologia de la Informacion"
+          Courses:
+            type: "array"
+            items:
+              type: object
+              properties:
+                course_id:
+                  type: string
+                  example: "ITI-201"
+                course_name:
+                  type: "string"
+                  example: "Matematica discreta"
+  ProfessorInfoGet:
+    type: object
+    properties:
+      _id:
+        type: string
+        example: 7619ajbamami91
+      professor_email:
+        type: string
+        example: "ebarahona@utn.ac.cr"
+      professor_name:
+        type: string
+        example: "Ever Barahona Mendoza"
+      career:
+        type: object
+        properties:
+          career_id:
+            type: string
+            example: "ITI"
+          career_name:
+            type: string
+            example: "Tecnologia de la Informacion"
+      subject:
+        type: array
+        items:
+          type: object
+          properties:
+            subject_id:
+              type: string
+            subject_name:
+              type: string
+        example:
+        - subject_id: "ITI-123"
+          subject_name: "Fundamentos de Base de Datos"
+        - subject_id: "ITI-412"
+          subject_name: "Ingenieria de Requerimientos y Modelado de SW"
+  Issue:
+    type: "object"
+    required:
+      - "lab"
+      - "person"
+      - "issue"
+      - "report_to"
+      - "observations"
+      - "status"
+      - "update"
+    properties:
+      lab:
+        type: "string"
+        example: "Lab A"
+        description: "Name of the lab where the issue occurred."
+      person:
+        type: "object"
+        required:
+          - "email"
+          - "student_name"
+        properties:
+          email:
+            type: "string"
+            format: "email"
+            example: "student@example.com"
+            description: "Email address of the person reporting the issue."
+          student_name:
+            type: "string"
+            example: "John Doe"
+            description: "Name of the student reporting the issue."
+      issue:
+        type: "array"
+        items:
+          type: "object"
+          required:
+            - "computer"
+            - "description"
+            - "is_repaired"
+          properties:
+            computer:
+              type: "string"
+              example: "Computer 1"
+              description: "Name or ID of the computer."
+            description:
+              type: "string"
+              example: "The computer is not turning on."
+              description: "Description of the issue."
+            is_repaired:
+              type: "boolean"
+              example: false
+              description: "Indicates whether the issue has been repaired."
+      report_to:
+        type: "string"
+        example: "Professor Smith"
+        description: "Name of the person to report the issue to."
+      observations:
+        type: "string"
+        example: "No additional observations."
+        description: "Additional observations related to the issue."
+      status:
+        type: "string"
+        example: "Open"
+        description: "Current status of the issue."
+      update:
+        type: "array"
+        items:
+          type: "object"
+          required:
+            - "observation"
+          properties:
+            observation:
+              type: "string"
+              example: "Issue acknowledged."
+              description: "Observation or update regarding the issue."
+            date:
+              type: "string"
+              format: "date-time"
+              example: "2024-07-18T12:00:00Z"
+              description: "Date of the update. If not provided, the current date is used."
+
+  IssueResponse:
+    type: "object"
+    properties:
+      data:
+        type: "object"
+        properties:
+          issue:
+            $ref: "#/definitions/Issue"
+      message:
+        type: "string"
+        example: "Issue successfully created"
+      message_code:
+        type: "string"
+        example: "ISSUE_SUCCESSFULLY_CREATED"
+
+  IssueErrorResponse:
+    type: "object"
+    properties:
+      data:
+        type: "string"
+        example: null
+      message:
+        type: "string"
+      message_code:
+        type: "string"
+
+  IssueAlreadyExistsErrorResponse:
+    type: "object"
+    properties:
+      data:
+        type: "string"
+        example: null
+      message:
+        type: "string"
+        example: "Issue already exists"
+      message_code:
+        type: "string"
+        example: "LAB_ALREADY_EXIST"
+
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
     get:
       tags:
         - "Labs"
+      parameters:
+      - name: Authorization
+        in: header
+        description: an authorization header
+        required: true
+        type: string
       summary: "Get list of all Labs"
       description: "Get list of all Labs"
       consumes:
@@ -118,9 +528,50 @@ paths:
         - "application/json"
       responses:
         "200":
-          description: "A list of countries"
+          description: "A list of Labs"
           schema:
-            $ref: "#/definitions/LabGet"
+            allOf:
+            - $ref: "#/definitions/Response"
+            - properties: 
+                data:
+                  items:
+                    $ref: "#/definitions/LabGet"
+                message:
+                  example: "Successfully requested"
+                message_code:
+                  example: "OK_MSG"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "404":
+          description: "No Labs found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Labs not found"
+                  message_code:
+                    example: "NOT_FOUND"
         "500":
           description: "Internal Server Error"
           schema:
@@ -128,7 +579,12 @@ paths:
     post:
       tags:
         - "Labs"
-      parameters:
+      parameters:      
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
         - in: "body"
           name: "body"
           description: "Lab object that needs to be added"
@@ -143,17 +599,40 @@ paths:
         - "application/json"
       responses:
         "201":
-          description: "Lab succesfully created"
+          description: "Lab Successfully Created"
           schema:
             allOf:
-              - $ref: "#/definitions/Response"
+            - $ref: "#/definitions/Response"
+            - properties: 
+                data:
+                  items:
+                    $ref: "#/definitions/LabGet"
+                message:
+                  example: "Lab Created"
+                message_code:
+                  example: "LAB_SUCCESSFULLY_CREATED"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
               - properties:
                   data:
-                    $ref: "#/definitions/LabGet"
+                    $ref: "#/definitions/StudentGet"
                   message:
-                    example: "Country successfully created"
+                    example: "Server Couldn't Process the Request"
                   message_code:
-                    example: "COUNTRY_SUCCESSFULLY_CREATED"
+                    example: "BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
         "409":
           description: "Lab already exists"
           schema:
@@ -161,9 +640,9 @@ paths:
               - $ref: "#/definitions/ErrorResponse"
               - properties:
                   message:
-                    example: "Lab aready exist"
+                    example: "Lab already exist"
                   message_code:
-                    example: "Lab_ALREADY_EXIST"
+                    example: "LAB_ALREADY_EXIST"
         "500":
           description: "Internal Server Error"
           schema:
@@ -172,6 +651,11 @@ paths:
         tags:
           - "Labs"
         parameters:
+          - name: Authorization
+            in: header
+            description: an authorization header
+            required: true
+            type: string
           - in: "body"
             name: "body"
             description: "Lab object that needs to be updated"
@@ -197,11 +681,42 @@ paths:
                       example: "Lab successfully updated"
                     message_code:
                       example: "Lab_SUCCESSFULLY_UPDATED"
+          "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+          "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
+          "404":
+            description: "No Labs found"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "Labs not found"
+                    message_code:
+                      example: "NOT_FOUND"
           "500":
             description: "Internal Server Error"
             schema:
               $ref: "#/definitions/InternalErrorResponse"
-
           "422":
             description: "Invalid Id"
             schema:
@@ -213,6 +728,8 @@ paths:
                     message_code:
                       example: "INVALID_ID"
   /Lab/{LabId}:
+
+    
     get:
       tags:
         - "Labs"
@@ -229,6 +746,11 @@ paths:
           required: true
           type: "integer"
           format: "integer"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
       responses:
         "200":
           description: "Get single Lab successfully"
@@ -238,6 +760,28 @@ paths:
               - properties:
                   data:
                     $ref: "#/definitions/LabGet"
+        "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
         "404":
           description: "Lab not found"
           schema:
@@ -272,6 +816,11 @@ paths:
           required: true
           type: "integer"
           format: "integer"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
       responses:
         "200":
           description: "Lab successfully deleted"
@@ -285,8 +834,30 @@ paths:
                     example: "Lab successfully deleted"
                   message_code:
                     example: "Lab_SUCCESSFULLY_DELETED"
+        "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
         "404":
-          description: "Country not found"
+          description: "Lab not found"
           schema:
             allOf:
               - $ref: "#/definitions/ErrorResponse"
@@ -303,6 +874,496 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+  /booking:
+    post:
+      tags:
+        - "Booking"
+      parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          description: "Booking object that needs to be added"
+          required: true
+          schema:
+            $ref: "#/definitions/BookingPost"
+      summary: "Create a Booking"
+      description: "Create a Booking"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "201":
+          description: "Booking succesfully created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/BookingGet"
+                  message:
+                    example: "Booking successfully created"
+                  message_code:
+                    example: "BOOKING_SUCCESSFULLY_CREATED"
+        "400":
+            description: "Bad Request"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    data:
+                      $ref: "#/definitions/StudentGet"
+                    message:
+                      example: "Server Couldn't Process the Request"
+                    message_code:
+                      example: "BAD_REQUEST"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
+        "409":
+          description: "Booking already exists"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Booking already exist"
+                  message_code:
+                    example: "Booking_ALREADY_EXIST"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"   
+       
+  /booking/computer:
+    delete:
+      tags:
+        - "Booking"
+      summary: "Eliminar una reserva de computadora"
+      description: "Este endpoint es utilizado por los estudiantes para eliminar una reserva. Elimina al estudiante para una computadora específica en la colección `lab_book`."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          description: "Datos necesarios para eliminar una reserva"
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: "ID del laboratorio"
+              student_email:
+                type: string
+                description: "Email del estudiante"
+              computer:
+                type: string
+                description: "Nombre o identificador de la computadora"
+            required:
+              - id
+              - student_email
+              - computer
+      responses:
+        '200':
+          description: "Reserva eliminada exitosamente"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Reserva eliminada exitosamente"
+              message_code:
+                type: string
+                example: "RESERVA_ELIMINADA_EXITOSAMENTE"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
+        '400':
+          description: "Solicitud incorrecta, faltan datos requeridos"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Faltan datos requeridos"
+              message_code:
+                type: string
+                example: "DATOS_REQUERIDOS_FALTANTES"
+        '500':
+          description: "Error interno del servidor"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error interno del servidor"
+              message_code:
+                type: string
+                example: "ERROR_INTERNO_SERVIDOR"  
+    post:
+      tags:
+        - "Booking"
+      summary: "Update a lab booking with new student information"
+      description: "This endpoint updates a lab booking by adding a new student with the provided information."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Lab booking update data"
+          required: true
+          schema:
+            $ref: "#/definitions/BookingPut"
+      responses:
+        "200":
+          description: "Computer booked successfully"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/BookingPut"
+              message:
+                type: string
+                example: "Computer booked successfully"
+              message_code:
+                type: string
+                example: "LAB_SUCCESSFULLY_UPDATED"
+        "400":
+          description: "Validation Error"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Invalid update data: missing key 'computer'"
+              message_code:
+                type: string
+                example: "INCORRECT_REQUEST_PARAM"
+        "404":
+          description: "Lab book not found"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Lab book not found"
+              message_code:
+                type: string
+                example: "LAB_NOT_FOUND"
+        "409":
+          description: "Computer already booked"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Computer already booked"
+              message_code:
+                type: string
+                example: "CONFLICT_MSG"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                example: null
+              message:
+                type: string
+                example: "Error retrieving lab book: Invalid ObjectId: 66882fc47495a27748ac7b"
+              message_code:
+                type: string
+                example: "INTERNAL_SERVER_ERROR_MSG"
+  /professor/byemail:
+    get:
+      tags:
+        - "Professors"
+      summary: "Get professor information by email"
+      description: "Returns the information of a professor based on their email address"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "professor_email"
+          in: "query"
+          description: "Email address of the professor"
+          required: true
+          type: "string"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/ProfessorGetByEmail"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
+            
+        "400":
+          description: "Bad Request - Professor email parameter is required"
+          schema:
+            type: "object"
+            properties:
+              data:
+                type: "string"
+                example: null
+              message:
+                type: "string"
+                example: "Professor email required"
+              message_code:
+                type: "string"
+                example: "PROFESSOR_EMAIL_REQUIRED"
+        "404":
+          description: "Not Found - Professor not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Professor not found"
+                  message_code:
+                    example: "PROFESSOR_NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+  /professor/info:
+    get:
+      tags:
+        - "Professors"
+      parameters:
+      - name: Authorization
+        in: header
+        description: an authorization header
+        required: true
+        type: string
+      summary: "Get professor information"
+      description: "Returns the detailed information of a professor"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/ProfessorInfoGet"
+        "401":
+            description: "Unauthorized"
+            schema:
+              allOf:
+                - $ref: "#/definitions/ErrorResponse"
+                - properties:
+                    message:
+                      example: "User Do not have the Required Permissions"
+                    message_code:
+                      example: "UNAUTHORIZED"
+        "404":
+          description: "Not Found - Professor not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+            example:
+              data: null
+              message: "Professor not found"
+              message_code: "PROFESSOR_NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+  /issue:
+    post:
+      tags:
+        - "Issues"
+      summary: "Create a new issue"
+      description: "Create a new issue with the specified details."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          description: "Issue object that needs to be added"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "lab"
+              - "person"
+              - "issue"
+              - "report_to"
+              - "observations"
+              - "status"
+              - "update"
+            properties:
+              lab:
+                type: "string"
+                example: "Lab A"
+                description: "Name of the lab where the issue occurred."
+              person:
+                type: "object"
+                required:
+                  - "email"
+                  - "student_name"
+                properties:
+                  email:
+                    type: "string"
+                    format: "email"
+                    example: "student@example.com"
+                    description: "Email address of the person reporting the issue."
+                  student_name:
+                    type: "string"
+                    example: "John Doe"
+                    description: "Name of the student reporting the issue."
+              issue:
+                type: "array"
+                items:
+                  type: "object"
+                  required:
+                    - "computer"
+                    - "description"
+                    - "is_repaired"
+                  properties:
+                    computer:
+                      type: "string"
+                      example: "Computer 1"
+                      description: "Name or ID of the computer."
+                    description:
+                      type: "string"
+                      example: "The computer is not turning on."
+                      description: "Description of the issue."
+                    is_repaired:
+                      type: "boolean"
+                      example: false
+                      description: "Indicates whether the issue has been repaired."
+              report_to:
+                type: "string"
+                example: "Professor Smith"
+                description: "Name of the person to report the issue to."
+              observations:
+                type: "string"
+                example: "No additional observations."
+                description: "Additional observations related to the issue."
+              status:
+                type: "string"
+                example: "Open"
+                description: "Current status of the issue."
+              update:
+                type: "array"
+                items:
+                  type: "object"
+                  required:
+                    - "observation"
+                  properties:
+                    observation:
+                      type: "string"
+                      example: "Issue acknowledged."
+                      description: "Observation or update regarding the issue."
+                    date:
+                      type: "string"
+                      format: "date-time"
+                      example: "2024-07-18T12:00:00Z"
+                      description: "Date of the update. If not provided, the current date is used."
+      responses:
+        "201":
+          description: "Issue successfully created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    type: "object"
+                    properties:
+                      lab_issue:
+                        type: "object"
+                        description: "Details of the created issue."
+        "400":
+          description: "Bad Request - Missing or invalid parameters"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "The lab is required"
+                  message_code:
+                    example: "ISSUE_LAB_REQUIRED"
+        "409":
+          description: "Conflict - Issue already exists"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Issue already exists"
+                  message_code:
+                    example: "LAB_ALREADY_EXIST"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
