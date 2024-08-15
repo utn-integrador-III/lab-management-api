@@ -132,3 +132,16 @@ class BookingModel:
     @staticmethod
     def update(lab_book_id, update_data):
         return __dbmanager__.update_data(lab_book_id, update_data)
+    
+    # models/booking/model.py
+
+    @classmethod
+    def get_all_filtered_by_end_time(cls, end_time):
+        try:
+            results = __dbmanager__.get_by_query({"end_time": {"$gt": end_time}})
+            # Elimina el campo '_id' de los resultados antes de crear instancias de BookingModel
+            bookings = [BookingModel(**{k: v for k, v in result.items() if k != '_id'}) for result in results]
+            return bookings
+        except Exception as ex:
+            logging.error(f"Failed to retrieve bookings: {ex}")
+            raise Exception("Failed to retrieve bookings: " + str(ex))

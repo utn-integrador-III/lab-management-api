@@ -1290,6 +1290,50 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"   
+    get:
+      tags:
+        - "Booking"
+      summary: "Get all booking labs filtered by the current system dateTime"
+      description: "Retrieve a list of booking labs filtered by the current system dateTime. Provides error responses for different scenarios."
+      responses:
+        "200":
+          description: "Bookings successfully retrieved"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/BookingGet"
+                  message:
+                    example: "Bookings successfully retrieved"
+                  message_code:
+                    example: "BOOKING_SUCCESSFULLY_RETRIEVED"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Bad Request"
+                  message_code:
+                    example: "BAD_REQUEST"
+        "404":
+          description: "No Bookings Found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "No bookings found that match the criteria"
+                  message_code:
+                    example: "BOOKING_NO_MATCHING_BOOKINGS"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
        
   /booking/computer:
     delete:

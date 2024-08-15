@@ -74,3 +74,13 @@ class Connection:
                 return False
         except Exception as e:
             raise Exception(e)
+        
+    # mongoclient.py
+
+    def get_by_query(self, query):
+        try:
+            result = self.collection.find(query)
+            return list(result)  # Convierte el cursor a una lista de documentos
+        except Exception as e:
+            logging.exception(e)
+            raise Exception(e)
