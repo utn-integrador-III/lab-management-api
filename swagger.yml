@@ -1503,6 +1503,92 @@ paths:
               message_code:
                 type: string
                 example: "INTERNAL_SERVER_ERROR_MSG"
+  /booking/date/{date} :
+     get:
+      tags:
+        - Booking
+      summary: Get a booking by Date
+      description: Retrieve the details of a booking by its Date.
+      parameters:
+        - name: date
+          in: path
+          description: The date of the booking to retrieve
+          required: true
+          type: string  
+      responses:
+        '200':
+          description: Successfully retrieved the booking
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Booking'
+              message:
+                type: string
+                example: "Booking found"
+              message_code:
+                type: string
+                example: "OK_MSG"
+              status:
+                type: integer
+                example: 200
+        '400':
+          description: Invalid ID supplied
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+              message:
+                type: string
+                example: "Invalid booking date"
+              message_code:
+                type: string
+                example: "INVALID_DATwE"
+              status:
+                type: integer
+                example: 400
+        
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                example: null
+              message:
+                type: string
+                example: "User Do not have the Required Permissions"
+              message_code:
+                type: string
+                example: "UNAUTHORIZED"
+        
+        
+        '404':
+          description: Booking not found
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+              message:
+                type: string
+                example: "Booking does not exist"
+              message_code:
+                type: string
+                example: "NO_DATA"
+              status:
+                type: integer
+                example: 200
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Internal server error"  
                 
   /booking/{id}:
     get:

@@ -12,6 +12,7 @@ from controllers.bookingComputer.controller import BookingComputerController
 from flask_restful import Api
 from controllers.professor_info.controller import ProfessorInfoController
 from controllers.professorByEmail.controller import ProfessorByEmailController
+from controllers.bookingbyDate.controller import BookingByDateController
 
 
 def addServiceLayer(api: Api):
@@ -31,7 +32,7 @@ def addServiceLayer(api: Api):
     api.add_resource(BookingController, BookingController.route)
     api.add_resource(BookingComputerController, BookingComputerController.route)
     api.add_resource(BookingByIdController, BookingByIdController.route)
-
+    api.add_resource(BookingByDateController, BookingByDateController.route)
     # Issue
     api.add_resource(IssueController, IssueController.route)
     api.add_resource(IssueByIdController, IssueByIdController.route)
