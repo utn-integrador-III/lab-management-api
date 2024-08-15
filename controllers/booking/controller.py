@@ -6,6 +6,9 @@ from models.booking.model import BookingModel
 import logging
 import re
 from utils.auth_manager import auth_required
+from datetime import datetime
+import pytz
+
 
 class BookingController(Resource):
     route = "/booking"
@@ -87,4 +90,35 @@ class BookingController(Resource):
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+        
+    """
+    Get all booking labs filtered by current system dateTime
+    """
+    @auth_required(permission='read', with_args=True)
+    def get(self, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            print(f"Current user: {current_user}")
+        else:
+            print("No user data available")
+        try:
+            # Use the system's local date and time
+            now = datetime.now()
+            bookings = BookingModel.get_all_filtered_by_end_time(now)
+            bookings_list = [booking.to_json() for booking in bookings]
 
+            if not bookings_list:
+                return ServerResponse(
+                    data=[],
+                    message="No bookings found that match the criteria",
+                    message_code=BOOKING_NO_MATCHING_BOOKINGS
+                )
+            
+            return ServerResponse(
+                data=bookings_list,
+                message="Bookings successfully retrieved",
+                message_code=BOOKING_SUCCESSFULLY_RETRIEVED
+            )
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
