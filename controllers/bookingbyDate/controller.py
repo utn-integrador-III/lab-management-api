@@ -11,7 +11,8 @@ import json
 class BookingByDateController(Resource):
     route = "/booking/date/<string:date>"
 
-    def get(self, date):
+    @auth_required(permission='read', with_args=True)
+    def get(self, date, current_user=None):
         try:
             filter_date = datetime.strptime(date, "%d-%m-%Y")
             start_of_day = datetime.combine(filter_date, datetime.min.time())
@@ -25,12 +26,12 @@ class BookingByDateController(Resource):
                 }
             }
             bookings = BookingModel.get_by_query(query)
-            
+
             if bookings:
                 serializable_bookings = json.loads(json_util.dumps(bookings))
                 for booking in serializable_bookings:
                     booking.pop('_id', None)
-                
+
                 return ServerResponse(
                     data=serializable_bookings,
                     message="Bookings found",

@@ -35,6 +35,20 @@ class BookingModel:
             "students": self.students,
             "observations": self.observations,
         }
+        
+    def to_json(self):
+        return {
+            "professor": self.professor,
+            "professor_email": self.professor_email,
+            "career": self.career,
+            "subject": self.subject,
+            "lab": self.lab,
+            "end_time": self.end_time.isoformat() if self.end_time else None,
+            "start_time": self.start_time.isoformat() if self.start_time else None,
+            "students": self.students,
+            "observations": self.observations,
+        }
+
     
     @classmethod
     def create(cls, data):
@@ -129,3 +143,14 @@ class BookingModel:
     @staticmethod
     def update(lab_book_id, update_data):
         return __dbmanager__.update_data(lab_book_id, update_data)
+    
+
+    @classmethod
+    def get_all_filtered_by_end_time(cls, end_time):
+        try:
+            results = __dbmanager__.get_by_query({"end_time": {"$gt": end_time}})
+            bookings = [BookingModel(**{k: v for k, v in result.items() if k != '_id'}) for result in results]
+            return bookings
+        except Exception as ex:
+            logging.error(f"Failed to retrieve bookings: {ex}")
+            raise Exception("Failed to retrieve bookings: " + str(ex))
