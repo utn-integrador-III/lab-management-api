@@ -8,7 +8,7 @@ import re
 from utils.auth_manager import auth_required
 from datetime import datetime
 import pytz
-
+from flask import jsonify
 
 class BookingController(Resource):
     route = "/booking"
@@ -102,23 +102,20 @@ class BookingController(Resource):
         else:
             print("No user data available")
         try:
-            # Use the system's local date and time
             now = datetime.now()
             bookings = BookingModel.get_all_filtered_by_end_time(now)
-            bookings_list = [booking.to_json() for booking in bookings]
-
-            if not bookings_list:
-                return ServerResponse(
+            if not bookings:
+                return jsonify(
                     data=[],
                     message="No bookings found that match the criteria",
                     message_code=BOOKING_NO_MATCHING_BOOKINGS
                 )
             
-            return ServerResponse(
-                data=bookings_list,
+            return jsonify(
+                data=bookings,
                 message="Bookings successfully retrieved",
                 message_code=BOOKING_SUCCESSFULLY_RETRIEVED
             )
         except Exception as ex:
             logging.exception(ex)
-            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+            return jsonify(status=StatusCode.INTERNAL_SERVER_ERROR)
