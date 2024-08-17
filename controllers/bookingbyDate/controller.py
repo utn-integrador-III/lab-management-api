@@ -11,7 +11,6 @@ import json
 class BookingByDateController(Resource):
     route = "/booking/date/<string:date>"
 
-    @auth_required(permission='read', with_args=True)
     def get(self, date):
         try:
             filter_date = datetime.strptime(date, "%d-%m-%Y")
