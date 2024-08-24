@@ -32,7 +32,7 @@ class BookingComputerController(Resource):
     route = "/booking/computer"
 
     @auth_required(permission='delete', with_args=True)
-    def delete(self, id, **kwargs):
+    def delete(self, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
             # Proceed with access to current_user data
@@ -45,7 +45,7 @@ class BookingComputerController(Resource):
             data = request.get_json()
             logging.info(f"Datos recibidos: {data}")
 
-            lab_id = data.get('id')
+            lab_id = data.get('lab_book_id')
             student_email = data.get('student_email')
             computer = data.get('computer')
 
