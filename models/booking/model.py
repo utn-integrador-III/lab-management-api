@@ -35,6 +35,29 @@ class BookingModel:
             "students": self.students,
             "observations": self.observations,
         }
+
+    def to_json(self):
+        def student_to_json(student):
+            return {
+                "student_email": student.get('student_email', ''),
+                "student_name": student.get('student_name', ''),
+                "computer": student.get('computer', ''),
+                "usage_time": student.get('usage_time').isoformat() if isinstance(student.get('usage_time'), datetime) else None,
+                "observations": student.get('observations', '')
+            }
+
+        return {
+            "id": str(self._id) if self._id else None,
+            "professor": self.professor,
+            "professor_email": self.professor_email,
+            "career": self.career,
+            "subject": self.subject,
+            "lab": self.lab,
+            "end_time": self.end_time.isoformat() if isinstance(self.end_time, datetime) else None,
+            "start_time": self.start_time.isoformat() if isinstance(self.start_time, datetime) else None,
+            "students": [student_to_json(student) for student in self.students] if self.students else [],
+            "observations": self.observations,
+        }
     
     @classmethod
     def create(cls, data):
@@ -135,12 +158,11 @@ class BookingModel:
     def get_all_filtered_by_end_time(cls, end_time):
         try:
             results = __dbmanager__.get_by_query({"end_time": {"$gt": end_time}})
-            bookings = [BookingModel(**{k: v for k, v in result.items() if k != '_id'}).to_dict() for result in results]
+            print("Results:", results)  
+            bookings = [BookingModel(**{k: v for k, v in result.items()}) for result in results]
+            for booking in bookings:
+                print(booking.to_json())  
             return bookings
         except Exception as ex:
             logging.error(f"Failed to retrieve bookings: {ex}")
             raise Exception("Failed to retrieve bookings: " + str(ex))
-        
-    def to_json(self):
-        import json
-        return json.dumps(self.to_dict())
