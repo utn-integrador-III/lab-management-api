@@ -41,7 +41,7 @@ def auth_required(action=None, permission='', with_args=False):
                     bodyRole = {'name': name}
                     # Make request to security API to check role permissions
                     role_response = requests.get(
-                        f"{config('AUTH_API_URL')}:{config('AUTH_API_PORT')}/rol",
+                        f"{config('AUTH_API_URL')}/rol",
                         json=bodyRole,
                     )
 
