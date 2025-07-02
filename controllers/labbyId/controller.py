@@ -8,13 +8,13 @@ from bson.errors import InvalidId
 
 class LabByIdController(Resource):
 
-    route = "/lab/<string:id>"
+    route = "/lab/<string:LabId>"
 
     """
     Get lab by num
     """    
     @auth_required(permission='read', with_args=True)
-    def get(self, **kwargs):
+    def get(self, LabId, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
             # Proceed with access to current_user data
@@ -23,7 +23,7 @@ class LabByIdController(Resource):
             # Handle cases where current_user is not provided
             print("No user data available")
         try:
-            result = LabModel.get_by_id(id)
+            result = LabModel.get_by_id(LabId)
             if result:
                 # Change to string the ObjectId
                 result["_id"] = str(result["_id"]) if "_id" in result else None
@@ -53,8 +53,3 @@ class LabByIdController(Resource):
         except Exception as ex:
             logging.error(f"Error getting lab by id: {ex}")
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
-
- 
-        
-   
-    
