@@ -25,23 +25,23 @@ def convert_to_serializable(data):
     return data
 
 class BookingByIdController(Resource):
-    route = "/booking/<string:id>"
+    route = "/booking/<string:booking_id>" 
 
     """
     Get booking by id
     """
     @auth_required(permission='read', with_args=True)
-    def get(self, id):
+    def get(self, booking_id):  
         current_user = request.args.get('current_user', None)
         if current_user:
             print(f"Current user: {current_user}")
         else:
             print("No user data available")
-        
+
         try:
-            result = BookingModel.get_by_id(id)
+            result = BookingModel.get_by_id(booking_id) 
             if result:
-                result = convert_to_serializable(result)  # Convierte los datos aquí
+                result = convert_to_serializable(result)
                 return ServerResponse(
                     data=result,
                     message="Booking found",

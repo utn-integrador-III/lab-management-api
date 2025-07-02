@@ -68,17 +68,20 @@ class LabModel:
             raise Exception(ex)
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, lab_id):
         try:
-            # Ensure the id is a valid ObjectId
-            if not ObjectId.is_valid(id):
-                raise InvalidId(f"Invalid ObjectId: {id}")
-            return __dbmanager__.get_by_id(id)
+            if not ObjectId.is_valid(lab_id):
+                raise InvalidId(f"Invalid ObjectId: {lab_id}")
+            obj_id = ObjectId(lab_id)
+            result = __dbmanager__.get_by_id(obj_id)
+            return result
         except InvalidId as ex:
-            raise ex  # Re-raise InvalidId to handle it specifically in the get method
+            raise ex
         except Exception as ex:
-            raise Exception(f"Error fetching zone by id {id}: {ex}")
+            raise Exception(f"Error fetching lab by id {lab_id}: {ex}")
 
+
+        
     @classmethod
     def update(cls, id, update_data):
         if not isinstance(id, str) or not ObjectId.is_valid(id):
