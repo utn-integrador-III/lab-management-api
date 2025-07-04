@@ -655,6 +655,68 @@ definitions:
         format: "date-time"
         example: "2024-07-18T12:00:00Z"
         description: "Date of the update. If not provided, the current date is used."
+paths:
+  /issue/mngmt:
+    put:
+      tags:
+        - Issues
+      summary: Update an issue by adding comments, changing the status, or repaired computers.
+      description: Allows you to update an issue by adding comments to the history, changing the status, or repairing computers.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Data to update the issue
+          required: true
+          schema:
+            type: object
+            properties:
+              _id:
+                type: string
+                description: ID of the issue to update
+              status:
+                type: string
+                enum: [Cancelled, Active, Pending, Done]
+                description: New status of the issue
+              new_update:
+                type: string
+                description: Comment to add to the history
+              repaired_computers:
+                type: array
+                description: List of computers to update
+                items:
+                  type: object
+                  properties:
+                    computer:
+                      type: string
+                      description: Name or identifier of the computer
+                    is_repaired:
+                      type: boolean
+                      description: Repair status
+      responses:
+        200:
+          description: Issue updated successfully
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestResponse'
+        404:
+          description: Issue not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/InternalErrorResponse'
+
+
+
+
 
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
