@@ -327,21 +327,21 @@ definitions:
         type: string
         example: "pc-1"
   BookingDelete:
-      type: object
-      required:
-        - "lab_book_id"
-        - "student_email"
-        - "computer"
-      properties:
-        lab_book_id:
-          type: string
-          example: "66882fc47495a27748ac7bb8"
-        student_email:
-          type: string
-          example: "alejandro@est.utn.ac.cr"
-        computer:
-          type: string
-          example: "pc-1"
+    type: object
+    required:
+      - "lab_book_id"
+      - "student_email"
+      - "computer"
+    properties:
+      lab_book_id:
+        type: string
+        example: "66882fc47495a27748ac7bb8"
+      student_email:
+        type: string
+        example: "alejandro@est.utn.ac.cr"
+      computer:
+        type: string
+        example: "pc-1"
   ProfessorGetByEmail:
     type: object
     properties:
@@ -401,10 +401,10 @@ definitions:
             subject_name:
               type: string
         example:
-        - subject_id: "ITI-123"
-          subject_name: "Fundamentos de Base de Datos"
-        - subject_id: "ITI-412"
-          subject_name: "Ingenieria de Requerimientos y Modelado de SW"
+          - subject_id: "ITI-123"
+            subject_name: "Fundamentos de Base de Datos"
+          - subject_id: "ITI-412"
+            subject_name: "Ingenieria de Requerimientos y Modelado de SW"
   Issue:
     type: "object"
     required:
@@ -556,8 +556,7 @@ definitions:
       message_code:
         type: "string"
         example: "ISSUE_SUCCESSFULLY_CREATED"
-        
-        
+
   IssueResponseGetAll:
     type: "object"
     properties:
@@ -657,8 +656,6 @@ definitions:
         example: "2024-07-18T12:00:00Z"
         description: "Date of the update. If not provided, the current date is used."
 
-
-
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
@@ -666,11 +663,11 @@ paths:
       tags:
         - "Labs"
       parameters:
-      - name: Authorization
-        in: header
-        description: an authorization header
-        required: true
-        type: string
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
       summary: "Get list of all Labs"
       description: "Get list of all Labs"
       consumes:
@@ -687,9 +684,9 @@ paths:
                   data:
                     $ref: "#/definitions/LabGet"
                   message:
-                   example: "Successfully requested"
+                    example: "Successfully requested"
                   message_code:
-                   example: "OK_MSG"
+                    example: "OK_MSG"
         "400":
           description: "Bad Request"
           schema:
@@ -729,7 +726,7 @@ paths:
     post:
       tags:
         - "Labs"
-      parameters:      
+      parameters:
         - name: Authorization
           in: header
           description: an authorization header
@@ -752,15 +749,15 @@ paths:
           description: "Lab Successfully Created"
           schema:
             allOf:
-            - $ref: "#/definitions/Response"
-            - properties: 
-                data:
-                  items:
-                    $ref: "#/definitions/LabGet"
-                message:
-                  example: "Lab Created"
-                message_code:
-                  example: "LAB_SUCCESSFULLY_CREATED"
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/LabGet"
+                  message:
+                    example: "Lab Created"
+                  message_code:
+                    example: "LAB_SUCCESSFULLY_CREATED"
         "400":
           description: "Bad Request"
           schema:
@@ -798,88 +795,86 @@ paths:
           schema:
             $ref: "#/definitions/InternalErrorResponse"
     put:
-        tags:
-          - "Labs"
-        parameters:
-          - name: Authorization
-            in: header
-            description: an authorization header
-            required: true
-            type: string
-          - in: "body"
-            name: "body"
-            description: "Lab object that needs to be updated"
-            required: true
-            schema:
-              $ref: "#/definitions/LabGetById"
-        summary: "Update a Lab"
-        description: "Update a Lab"
-        consumes:
-          - "application/json"
-        produces:
-          - "application/json"
-        responses:
-          "200":
-            description: "An updated Lab"
-            schema:
-              allOf:
-                - $ref: "#/definitions/Response"
-                - properties:
-                    data:
-                      $ref: "#/definitions/LabGet"
-                    message:
-                      example: "Lab successfully updated"
-                    message_code:
-                      example: "Lab_SUCCESSFULLY_UPDATED"
-          "400":
-            description: "Bad Request"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    data:
-                      $ref: "#/definitions/StudentGet"
-                    message:
-                      example: "Server Couldn't Process the Request"
-                    message_code:
-                      example: "BAD_REQUEST"
-          "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
-          "404":
-            description: "No Labs found"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "Labs not found"
-                    message_code:
-                      example: "NOT_FOUND"
-          "500":
-            description: "Internal Server Error"
-            schema:
-              $ref: "#/definitions/InternalErrorResponse"
-          "422":
-            description: "Invalid Id"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "Invalid Id"
-                    message_code:
-                      example: "INVALID_ID"
+      tags:
+        - "Labs"
+      parameters:
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          description: "Lab object that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/LabGetById"
+      summary: "Update a Lab"
+      description: "Update a Lab"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "An updated Lab"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  data:
+                    $ref: "#/definitions/LabGet"
+                  message:
+                    example: "Lab successfully updated"
+                  message_code:
+                    example: "Lab_SUCCESSFULLY_UPDATED"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "404":
+          description: "No Labs found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Labs not found"
+                  message_code:
+                    example: "NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+        "422":
+          description: "Invalid Id"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Invalid Id"
+                  message_code:
+                    example: "INVALID_ID"
   /Lab/{LabId}:
-
-    
     get:
       tags:
         - "Labs"
@@ -911,27 +906,27 @@ paths:
                   data:
                     $ref: "#/definitions/LabGet"
         "400":
-            description: "Bad Request"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    data:
-                      $ref: "#/definitions/StudentGet"
-                    message:
-                      example: "Server Couldn't Process the Request"
-                    message_code:
-                      example: "BAD_REQUEST"
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
         "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
         "404":
           description: "Lab not found"
           schema:
@@ -985,27 +980,27 @@ paths:
                   message_code:
                     example: "Lab_SUCCESSFULLY_DELETED"
         "400":
-            description: "Bad Request"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    data:
-                      $ref: "#/definitions/StudentGet"
-                    message:
-                      example: "Server Couldn't Process the Request"
-                    message_code:
-                      example: "BAD_REQUEST"
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
         "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
         "404":
           description: "Lab not found"
           schema:
@@ -1060,27 +1055,27 @@ paths:
                   message_code:
                     example: "BOOKING_SUCCESSFULLY_CREATED"
         "400":
-            description: "Bad Request"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    data:
-                      $ref: "#/definitions/StudentGet"
-                    message:
-                      example: "Server Couldn't Process the Request"
-                    message_code:
-                      example: "BAD_REQUEST"
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
         "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
         "409":
           description: "Booking already exists"
           schema:
@@ -1094,8 +1089,8 @@ paths:
         "500":
           description: "Internal Server Error"
           schema:
-            $ref: "#/definitions/InternalErrorResponse"   
-       
+            $ref: "#/definitions/InternalErrorResponse"
+
   /booking/computer:
     delete:
       tags:
@@ -1114,7 +1109,7 @@ paths:
           schema:
             $ref: "#/definitions/BookingDelete"
       responses:
-        '200':
+        "200":
           description: "Reserva eliminada exitosamente"
           schema:
             type: object
@@ -1126,16 +1121,16 @@ paths:
                 type: string
                 example: "RESERVA_ELIMINADA_EXITOSAMENTE"
         "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
-        '400':
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "400":
           description: "Solicitud incorrecta, faltan datos requeridos"
           schema:
             type: object
@@ -1146,7 +1141,7 @@ paths:
               message_code:
                 type: string
                 example: "DATOS_REQUERIDOS_FALTANTES"
-        '500':
+        "500":
           description: "Error interno del servidor"
           schema:
             type: object
@@ -1156,7 +1151,7 @@ paths:
                 example: "Error interno del servidor"
               message_code:
                 type: string
-                example: "ERROR_INTERNO_SERVIDOR"  
+                example: "ERROR_INTERNO_SERVIDOR"
     post:
       tags:
         - "Booking"
@@ -1274,16 +1269,16 @@ paths:
                   data:
                     $ref: "#/definitions/ProfessorGetByEmail"
         "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
-            
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+
         "400":
           description: "Bad Request - Professor email parameter is required"
           schema:
@@ -1312,16 +1307,16 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-  /professor/info:
+  /professor:
     get:
       tags:
         - "Professors"
       parameters:
-      - name: Authorization
-        in: header
-        description: an authorization header
-        required: true
-        type: string
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
       summary: "Get professor information"
       description: "Returns the detailed information of a professor"
       produces:
@@ -1336,15 +1331,15 @@ paths:
                   data:
                     $ref: "#/definitions/ProfessorInfoGet"
         "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
         "404":
           description: "Not Found - Professor not found"
           schema:
@@ -1360,39 +1355,39 @@ paths:
             $ref: "#/definitions/InternalErrorResponse"
   /issue:
     get:
-        tags:
-          - "Issues"
-        summary: "Get all issues"
-        description: "Retrieve a list of all issues."
-        produces:
-          - "application/json"
-        parameters:
-          - name: Authorization
-            in: header
-            description: "An authorization header"
-            required: true
-            type: string
-        responses:
-          "200":
-            description: "Successfully requested"
-            schema:
-              $ref: "#/definitions/IssueResponseGetAll"
-          
-          "401":
-            description: "Unauthorized"
-            schema:
-              allOf:
-                - $ref: "#/definitions/ErrorResponse"
-                - properties:
-                    message:
-                      example: "User Do not have the Required Permissions"
-                    message_code:
-                      example: "UNAUTHORIZED"
-          
-          "500":
-            description: "Internal Server Error"
-            schema:
-              $ref: "#/definitions/InternalErrorResponse"
+      tags:
+        - "Issues"
+      summary: "Get all issues"
+      description: "Retrieve a list of all issues."
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: "An authorization header"
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "Successfully requested"
+          schema:
+            $ref: "#/definitions/IssueResponseGetAll"
+
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
     post:
       tags:
         - "Issues"
@@ -1450,7 +1445,7 @@ paths:
       summary: "Find Issue by ID"
       description: "Returns a single Issue"
       parameters:
-        - name: "IssueId"
+        - name: "issueId"
           in: "path"
           description: "ID of Issue to return"
           required: true
@@ -1548,7 +1543,7 @@ paths:
               message:
                 type: "string"
                 example: "ID is required"
-                
+
         "401":
           description: "Unauthorized"
           schema:
@@ -1559,7 +1554,7 @@ paths:
                     example: "User Do not have the Required Permissions"
                   message_code:
                     example: "UNAUTHORIZED"
-                    
+
         "404":
           description: "Not Found - Issue not found or status is not pending"
           schema:

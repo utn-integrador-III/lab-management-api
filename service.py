@@ -19,7 +19,7 @@ def addServiceLayer(api: Api):
     # Health
     api.add_resource(HealthController, HealthController.route)
     # Lab
-    api.add_resource(LabController, LabController.route)
+    api.add_resource(LabController, LabController.route, LabController.route_with_id)
     api.add_resource(LabByIdController, LabByIdController.route)
 
     # Professor_info
