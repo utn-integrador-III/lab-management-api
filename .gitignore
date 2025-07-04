@@ -7,6 +7,8 @@ __pycache__/
 *.so
 
 .vscode/launch.json
+/.vscode/
+.vscode/
 
 # Distribution / packaging
 .Python
