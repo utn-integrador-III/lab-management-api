@@ -31,8 +31,7 @@ class BookingByIdController(Resource):
     Get booking by id
     """
     @auth_required(permission='read', with_args=True)
-    def get(self, id):
-        current_user = request.args.get('current_user', None)
+    def get(self, id, current_user=None):
         if current_user:
             print(f"Current user: {current_user}")
         else:

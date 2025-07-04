@@ -1,12 +1,13 @@
-{ "version": "0.2.0",
-        "configurations": [
-            {
-                "name": "Python: Current File",
-                "type": "debugpy",
-                "request": "launch",
-                "program": "./app.py",
-                "console": "integratedTerminal",
-                "envFile": ".env"
-            }
-        ]
-   }
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "./app.py",
+      "console": "integratedTerminal",
+      "envFile": ".env"
+    }
+  ]
+}
