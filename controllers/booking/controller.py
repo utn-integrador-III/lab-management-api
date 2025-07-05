@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
 from utils.server_response import *
 from utils.message_codes import *
 from models.booking.model import BookingModel
@@ -8,7 +8,6 @@ import re
 from utils.auth_manager import auth_required
 from datetime import datetime
 import pytz
-from flask import jsonify
 
 class BookingController(Resource):
     route = "/booking"
@@ -17,30 +16,37 @@ class BookingController(Resource):
     Create a new booking 
     """
     @auth_required(permission='write', with_args=True)
-    def post(self,**kwargs):
+    def post(self, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
-            # Proceed with access to current_user data
             print(f"Current user: {current_user}")
         else:
-            # Handle cases where current_user is not provided
             print("No user data available")
         try:
             data = request.get_json()
+            # Si no viene el nombre del profesor, lo obtenemos del usuario autenticado
             if not data.get("professor"):
-                return ServerResponse(
-                    message='professor is required', 
-                    message_code=BOOKING_PROFESSOR_REQUIRED, 
-                    status=StatusCode.BAD_REQUEST,
-                )
+                if current_user and current_user.get("name"):
+                    data["professor"] = current_user["name"]
+                else:
+                    return ServerResponse(
+                        message='professor is required', 
+                        message_code=BOOKING_PROFESSOR_REQUIRED, 
+                        status=StatusCode.BAD_REQUEST,
+                    )
 
+            
             professor_email = data.get("professor_email")
             if not professor_email:
-                return ServerResponse(
-                    message='professor_email is required', 
-                    message_code=BOOKING_PROFESSOR_REQUIRED, 
-                    status=StatusCode.BAD_REQUEST,
-                )
+                if current_user and current_user.get("email"):
+                    data["professor_email"] = current_user["email"]
+                    professor_email = current_user["email"]
+                else:
+                    return ServerResponse(
+                        message='professor_email is required', 
+                        message_code=BOOKING_PROFESSOR_REQUIRED, 
+                        status=StatusCode.BAD_REQUEST,
+                    )
             
             if not re.match(r"^[\w\.-]+@utn\.ac\.cr$", professor_email):
                 return ServerResponse(
@@ -112,7 +118,7 @@ class BookingController(Resource):
                 )
             
             return jsonify(
-                data=bookings,
+                data=[b.to_json() for b in bookings],
                 message="Bookings successfully retrieved",
                 message_code=BOOKING_SUCCESSFULLY_RETRIEVED
             )
