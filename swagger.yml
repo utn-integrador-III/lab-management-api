@@ -1515,7 +1515,7 @@ paths:
       summary: "Find Issue by ID"
       description: "Returns a single Issue"
       parameters:
-        - name: "IssueId"
+        - name: "issueId"
           in: "path"
           description: "ID of Issue to return"
           required: true
