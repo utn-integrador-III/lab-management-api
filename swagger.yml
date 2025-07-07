@@ -1438,65 +1438,6 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-  /issues/{issueId}:
-    get:
-      tags:
-        - "Issues"
-      summary: "Find Issue by ID"
-      description: "Returns a single Issue"
-      parameters:
-        - name: "issueId"
-          in: "path"
-          description: "ID of Issue to return"
-          required: true
-          type: "integer"
-          format: "integer"
-        - name: Authorization
-          in: header
-          description: an authorization header
-          required: true
-          type: string
-      responses:
-        "200":
-          description: "Successfully requested"
-          schema:
-            $ref: "#/definitions/IssueResponseGetAll"
-        "400":
-          description: "Bad Request"
-          schema:
-            allOf:
-              - $ref: "#/definitions/ErrorResponse"
-              - properties:
-                  data:
-                    $ref: "#/definitions/StudentGet"
-                  message:
-                    example: "Server Couldn't Process the Request"
-                  message_code:
-                    example: "BAD_REQUEST"
-        "401":
-          description: "Unauthorized"
-          schema:
-            allOf:
-              - $ref: "#/definitions/ErrorResponse"
-              - properties:
-                  message:
-                    example: "User Do not have the Required Permissions"
-                  message_code:
-                    example: "UNAUTHORIZED"
-        "404":
-          description: "No Issue found"
-          schema:
-            allOf:
-              - $ref: "#/definitions/ErrorResponse"
-              - properties:
-                  message:
-                    example: "Issue not found"
-                  message_code:
-                    example: "NOT_FOUND"
-        "500":
-          description: "Internal Server Error"
-          schema:
-            $ref: "#/definitions/InternalErrorResponse"
     delete:
       tags:
         - "Issues"
@@ -1563,6 +1504,65 @@ paths:
               message:
                 type: "string"
                 example: "Issue not found or status is not pending"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+  /issues/{issueId}:
+    get:
+      tags:
+        - "Issues"
+      summary: "Find Issue by ID"
+      description: "Returns a single Issue"
+      parameters:
+        - name: "issueId"
+          in: "path"
+          description: "ID of Issue to return"
+          required: true
+          type: "integer"
+          format: "integer"
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "Successfully requested"
+          schema:
+            $ref: "#/definitions/IssueResponseGetAll"
+        "400":
+          description: "Bad Request"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/StudentGet"
+                  message:
+                    example: "Server Couldn't Process the Request"
+                  message_code:
+                    example: "BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "404":
+          description: "No Issue found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Issue not found"
+                  message_code:
+                    example: "NOT_FOUND"
         "500":
           description: "Internal Server Error"
           schema:
