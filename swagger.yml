@@ -889,8 +889,8 @@ paths:
           in: "path"
           description: "ID of Lab to return"
           required: true
-          type: "integer"
-          format: "integer"
+          type: "string"
+          format: "string"
         - name: Authorization
           in: header
           description: an authorization header
@@ -959,8 +959,8 @@ paths:
           in: "path"
           description: "ID of Lab to delete"
           required: true
-          type: "integer"
-          format: "integer"
+          type: "string"
+          format: "string"
         - name: Authorization
           in: header
           description: an authorization header
@@ -1519,8 +1519,8 @@ paths:
           in: "path"
           description: "ID of Issue to return"
           required: true
-          type: "integer"
-          format: "integer"
+          type: "string"
+          format: "string"
         - name: Authorization
           in: header
           description: an authorization header
