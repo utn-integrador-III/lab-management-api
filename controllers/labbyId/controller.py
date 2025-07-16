@@ -55,7 +55,7 @@ class LabByIdController(Resource):
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
         
     """
-    Get lab by num
+    Delete lab by num
     """    
         
     @auth_required(permission='delete', with_args=True)
