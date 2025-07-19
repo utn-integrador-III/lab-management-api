@@ -656,6 +656,39 @@ definitions:
         example: "2024-07-18T12:00:00Z"
         description: "Date of the update. If not provided, the current date is used."
 
+  IssueUpdateRequest:
+    type: "object"
+    required:
+      - "_id"
+    properties:
+      _id:
+        type: "string"
+        example: "60f7b3b3b3b3b3b3b3b3b3b3"
+        description: "Unique identifier of the issue to update."
+      status:
+        type: "string"
+        enum: ["Active", "Cancelled", "Pending", "Done"]
+        example: "Active"
+        description: "New status for the issue. Can be Active, Cancelled, Pending, or Done."
+      new_update:
+        type: "string"
+        example: "Issue has been reviewed and is being worked on."
+        description: "New comment or update to add to the issue."
+      computer:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            computer:
+              type: "string"
+              example: "PC-01"
+              description: "Computer identifier."
+            is_repaired:
+              type: "boolean"
+              example: true
+              description: "Whether this computer's issue has been repaired."
+        description: "Array of computers with their repair status updates."
+
 #The paths are the ones with all the information of the CRUD methods of the end-points
 paths:
   /Lab:
@@ -1567,7 +1600,100 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-
+  /issue/mngmt:
+    put:
+      tags:
+        - "Issues"
+      summary: "Update issue with comments and status management"
+      description: "Update an existing issue by adding comments, changing status, or marking computers as repaired. Supports status changes to Active, Cancelled, Pending, or Done."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: "An authorization header"
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          description: "Issue update object with ID, status, comments, and computer repair status"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "_id"
+            properties:
+              _id:
+                type: "string"
+                example: "60f7b3b3b3b3b3b3b3b3b3b3"
+                description: "Unique identifier of the issue to update."
+              status:
+                type: "string"
+                enum: ["Active", "Cancelled", "Pending", "Done"]
+                example: "Active"
+                description: "New status for the issue."
+              new_update:
+                type: "string"
+                example: "Issue has been reviewed and is being worked on."
+                description: "New comment or update to add to the issue."
+              computer:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    computer:
+                      type: "string"
+                      example: "PC-01"
+                    is_repaired:
+                      type: "boolean"
+                      example: true
+      responses:
+        "200":
+          description: "Issue successfully updated"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Response"
+              - properties:
+                  message:
+                    example: "Issue successfully updated"
+                  message_code:
+                    example: "ISSUE_SUCCESSFULLY_UPDATED"
+        "400":
+          description: "Bad Request - Missing required fields or no changes detected"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "ID is required"
+                  message_code:
+                    example: "ISSUE_ID_REQUIRED"
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+        "404":
+          description: "Issue not found"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "Issue not found"
+                  message_code:
+                    example: "ISSUE_NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
