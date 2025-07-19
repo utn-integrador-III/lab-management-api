@@ -157,12 +157,12 @@ class BookingModel:
     @classmethod
     def get_all_filtered_by_end_time(cls, end_time):
         try:
+            booking_list=[]
             results = __dbmanager__.get_by_query({"end_time": {"$gt": end_time}})
-            print("Results:", results)  
             bookings = [BookingModel(**{k: v for k, v in result.items()}) for result in results]
             for booking in bookings:
-                print(booking.to_json())  
-            return bookings
+                booking_list.append(booking.to_json())
+            return booking_list
         except Exception as ex:
             logging.error(f"Failed to retrieve bookings: {ex}")
             raise Exception("Failed to retrieve bookings: " + str(ex))
