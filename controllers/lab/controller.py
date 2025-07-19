@@ -10,7 +10,6 @@ from bson.errors import InvalidId
 
 class LabController(Resource):
     route = "/lab"
-    route_with_id = "/lab/<string:LabId>"
 
     """
     Get all labs
@@ -192,31 +191,4 @@ class LabController(Resource):
                 status=StatusCode.INTERNAL_SERVER_ERROR,
             )
         
-    @auth_required(permission='delete', with_args=True)
-    def delete(self, LabId, **kwargs):
-        current_user = kwargs.get('current_user', None)
-        if current_user:
-            # Proceed with access to current_user data
-            print(f"Current user: {current_user}")
-        else:
-            # Handle cases where current_user is not provided
-            print("No user data available")
-        try:
-            result = LabModel.delete(LabId)
-            if result:
-                return ServerResponse(
-                    message="lab successfully deleted",
-                    message_code=LAB_SUCCESSFULLY_DELETED,
-                    status=StatusCode.OK,
-                )
-            else:
-                return ServerResponse(
-                    data={},
-                    message="The lab no exists and cannot be deleted.",
-                    message_codes=NO_DATA,
-                    status=StatusCode.OK,
-                )
-        except Exception as ex:
-            logging.exception(ex)
-            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
         
