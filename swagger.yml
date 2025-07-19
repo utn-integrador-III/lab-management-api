@@ -405,6 +405,34 @@ definitions:
             subject_name: "Fundamentos de Base de Datos"
           - subject_id: "ITI-412"
             subject_name: "Ingenieria de Requerimientos y Modelado de SW"
+  BookingbyDate:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "66882fc47495a27748ac7b"
+      customer_name:
+        type: string
+        example: "Jane Smith"
+      status:
+        type: string
+        example: "pending"
+      date:
+        type: string
+        format: date
+        example: "2025-07-18"
+  BookingbyID:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "66882fc47495a27748ac7b"
+      customer_name:
+        type: string
+        example: "John Doe"
+      status:
+        type: string
+        example: "confirmed"
   Issue:
     type: "object"
     required:
@@ -1273,6 +1301,80 @@ paths:
               message_code:
                 type: string
                 example: "INTERNAL_SERVER_ERROR_MSG"
+                
+  /booking/by-date/{date}:
+    get:
+      tags:
+      - Booking
+      summary: Get all bookings by date
+      description: Retrieve all bookings for a specific date.
+      produces:
+      - application/json
+      parameters:
+      - name: date
+        in: path
+        required: true
+        type: string
+        format: date
+        description: 'Date to retrieve bookings for (format: YYYY-MM-DD)'
+      responses:
+        '200':
+          description: Successfully retrieved bookings
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BookingbyDate'
+        '401':
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/ErrorResponse'
+            - type: object
+              properties:
+                message:
+                  example: User does not have the required permissions
+                message_code:
+                  example: UNAUTHORIZED
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/InternalErrorResponse'
+
+  /booking/by-id/{id}:
+    get:
+      tags:
+      - Booking
+      summary: Get booking by ID
+      description: Retrieve booking details by booking ID.
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+        description: Booking ID to retrieve
+      responses:
+        '200':
+          description: Successfully requested
+          schema:
+            $ref: '#/definitions/BookingbyID'
+        '401':
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/ErrorResponse'
+            - type: object
+              properties:
+                message:
+                  example: User Do not have the Required Permissions
+                message_code:
+                  example: UNAUTHORIZED
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/InternalErrorResponse'
+
   /professor/byemail:
     get:
       tags:
