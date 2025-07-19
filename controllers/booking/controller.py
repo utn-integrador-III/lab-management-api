@@ -111,11 +111,8 @@ class BookingController(Resource):
                     message_code=BOOKING_NO_MATCHING_BOOKINGS
                 )
             
-            return jsonify(
-                data=bookings,
-                message="Bookings successfully retrieved",
-                message_code=BOOKING_SUCCESSFULLY_RETRIEVED
-            )
+            return ServerResponse(data=bookings, message="Bookings successfully retrieved",message_code=BOOKING_SUCCESSFULLY_RETRIEVED)
+            
         except Exception as ex:
             logging.exception(ex)
             return jsonify(status=StatusCode.INTERNAL_SERVER_ERROR)
