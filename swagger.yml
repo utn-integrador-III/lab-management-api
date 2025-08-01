@@ -1301,79 +1301,79 @@ paths:
               message_code:
                 type: string
                 example: "INTERNAL_SERVER_ERROR_MSG"
-                
-  /booking/by-date/{date}:
+
+  /booking/date/{date}:
     get:
       tags:
-      - Booking
+        - Booking
       summary: Get all bookings by date
       description: Retrieve all bookings for a specific date.
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: date
-        in: path
-        required: true
-        type: string
-        format: date
-        description: 'Date to retrieve bookings for (format: YYYY-MM-DD)'
+        - name: date
+          in: path
+          required: true
+          type: string
+          format: date
+          description: "Date to retrieve bookings for (format: YYYY-MM-DD)"
       responses:
-        '200':
+        "200":
           description: Successfully retrieved bookings
           schema:
             type: array
             items:
-              $ref: '#/definitions/BookingbyDate'
-        '401':
+              $ref: "#/definitions/BookingbyDate"
+        "401":
           description: Unauthorized
           schema:
             allOf:
-            - $ref: '#/definitions/ErrorResponse'
-            - type: object
-              properties:
-                message:
-                  example: User does not have the required permissions
-                message_code:
-                  example: UNAUTHORIZED
-        '500':
+              - $ref: "#/definitions/ErrorResponse"
+              - type: object
+                properties:
+                  message:
+                    example: User does not have the required permissions
+                  message_code:
+                    example: UNAUTHORIZED
+        "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/InternalErrorResponse'
+            $ref: "#/definitions/InternalErrorResponse"
 
-  /booking/by-id/{id}:
+  /booking/{id}:
     get:
       tags:
-      - Booking
+        - Booking
       summary: Get booking by ID
       description: Retrieve booking details by booking ID.
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: id
-        in: path
-        required: true
-        type: string
-        description: Booking ID to retrieve
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: Booking ID to retrieve
       responses:
-        '200':
+        "200":
           description: Successfully requested
           schema:
-            $ref: '#/definitions/BookingbyID'
-        '401':
+            $ref: "#/definitions/BookingbyID"
+        "401":
           description: Unauthorized
           schema:
             allOf:
-            - $ref: '#/definitions/ErrorResponse'
-            - type: object
-              properties:
-                message:
-                  example: User Do not have the Required Permissions
-                message_code:
-                  example: UNAUTHORIZED
-        '500':
+              - $ref: "#/definitions/ErrorResponse"
+              - type: object
+                properties:
+                  message:
+                    example: User Do not have the Required Permissions
+                  message_code:
+                    example: UNAUTHORIZED
+        "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/InternalErrorResponse'
+            $ref: "#/definitions/InternalErrorResponse"
 
   /professor/byemail:
     get:
@@ -1643,7 +1643,7 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-  /issues/{issueId}:
+  /issue/{issueId}:
     get:
       tags:
         - "Issues"

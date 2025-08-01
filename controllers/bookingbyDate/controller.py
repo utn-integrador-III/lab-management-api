@@ -12,9 +12,9 @@ class BookingByDateController(Resource):
     route = "/booking/date/<string:date>"
 
     @auth_required(permission='read', with_args=True)
-    def get(self, date, current_user=None):
+    def get(self, date, **kwargs):
         try:
-            filter_date = datetime.strptime(date, "%d-%m-%Y")
+            filter_date = datetime.strptime(date, "%Y-%m-%d")
             start_of_day = datetime.combine(filter_date, datetime.min.time())
             end_of_day = start_of_day + timedelta(days=1)
 
@@ -49,7 +49,7 @@ class BookingByDateController(Resource):
         except ValueError:
             return ServerResponse(
                 data=None,
-                message="Invalid date format. Please use dd-mm-yyyy.",
+                message="Invalid date format. Please use yyyy-mm-dd.",
                 message_code=INVALID_DATE,
                 status=StatusCode.BAD_REQUEST,
             )
