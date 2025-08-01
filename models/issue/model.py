@@ -12,12 +12,12 @@ class IssueModel:
         self.lab = lab
         self.date_issue = date_issue
         self._id = _id
-        self.person=person
+        self.person = person
         self.issue = issue
-        self.report_to=report_to
+        self.report_to = report_to
         self.observations = observations
         self.status = status
-        self.update=update
+        self.update = update
 
     def to_dict(self):
         return {
@@ -32,8 +32,21 @@ class IssueModel:
         }
 
     @classmethod
+    def create(cls, data):
+        try:
+            issue = cls(**data)
+            issue_data = issue.to_dict()
+            result = __dbmanager__.insert_one(issue_data)
+            if result.inserted_id:
+                issue._id = str(result.inserted_id) 
+                return issue  
+            raise Exception("Failed to create issue")
+        except Exception as ex:
+            logging.exception(ex)
+            raise Exception("Failed to create issue: " + str(ex))
+
+    @classmethod
     def _format_issue_data(cls, issues):
-        """Converts ObjectId and datetime objects to strings."""
         formatted_issues = []
         for issue in issues:
             if isinstance(issue, dict):
@@ -53,7 +66,7 @@ class IssueModel:
     @classmethod
     def get_all(cls):
         try:
-            issues_from_db = list(__dbmanager__.get_all_data())
+            issues_from_db = list(__dbmanager__.find()) 
             return cls._format_issue_data(issues_from_db)
         except Exception as ex:
             logging.exception(ex)
@@ -63,7 +76,7 @@ class IssueModel:
     def get_by_id(cls, _id):
         try:
             object_id = ObjectId(_id)
-            issue = __dbmanager__.find_one({"_id": object_id})
+            issue = __dbmanager__.find_one({"_id": object_id})  
             if issue:
                 return issue
             return None
@@ -79,7 +92,7 @@ class IssueModel:
             object_id = ObjectId(_id)
             issue = __dbmanager__.find_one({"_id": object_id})
             if issue and issue.get("status") == "Pending":
-                __dbmanager__.delete_data(object_id)
+                __dbmanager__.delete_one({"_id": object_id}) 
                 return True
             return False
         except InvalidId:
@@ -91,7 +104,7 @@ class IssueModel:
     @staticmethod
     def find_by_id(lab_book_id):
         try:
-            return __dbmanager__.get_by_id(lab_book_id)
+            return __dbmanager__.find_one({"_id": ObjectId(lab_book_id)})  
         except ServerSelectionTimeoutError as e:
             logging.error(f"Database connection error: {e}")
             raise  
@@ -99,21 +112,21 @@ class IssueModel:
     @staticmethod
     def update(issue_id, data):
         try:
-            result = __dbmanager__.update_data(issue_id, data)
-            if not result:
-                raise Exception("Failed to update issue: No changes were made.")
-            return result
+            result = __dbmanager__.update_one({"_id": ObjectId(issue_id)}, {"$set": data}) 
+            if result.modified_count > 0:
+                return result
+            raise Exception("Failed to update issue: No changes were made.")
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to update issue: " + str(ex))
         
     @classmethod     
-    def update_data(cls,issue_id, data):
+    def update_data(cls, issue_id, data):
         try:
-            result = __dbmanager__.update_data(issue_id, data)
-            if not result:
-                raise Exception("Failed to update issue: No changes were made.")
-            return result
+            result = __dbmanager__.update_one({"_id": ObjectId(issue_id)}, {"$set": data}) 
+            if result.modified_count > 0:
+                return result
+            raise Exception("Failed to update issue: No changes were made.")
         except InvalidId:
             raise Exception("Invalid ID format")
         except Exception as ex:
