@@ -1,9 +1,9 @@
 from bson import ObjectId
-from bson.errors import InvalidId  # Import InvalidId class
-
+from bson.errors import InvalidId 
 from models.issue.db_queries import __dbmanager__
 import logging
 from pymongo.errors import ServerSelectionTimeoutError
+from datetime import datetime
 
 class IssueModel:
 
@@ -30,26 +30,34 @@ class IssueModel:
             "status": self.status,
             "update": self.update
         }
+
     @classmethod
-    def create(cls, data):
-        try:
-            issue = cls(**data)
-            __dbmanager__.create_data(issue.to_dict()) 
-            return issue
-        except Exception as ex:
-            logging.exception(ex)
-            raise Exception("Failed to create lab: " + str(ex))
-        
+    def _format_issue_data(cls, issues):
+        """Converts ObjectId and datetime objects to strings."""
+        formatted_issues = []
+        for issue in issues:
+            if isinstance(issue, dict):
+                if "_id" in issue:
+                    issue["_id"] = str(issue["_id"])
+                
+                if "date_issue" in issue and isinstance(issue["date_issue"], datetime):
+                    issue["date_issue"] = issue["date_issue"].isoformat()
+                
+                for update_item in issue.get("update", []):
+                    if isinstance(update_item, dict) and isinstance(update_item.get("date"), datetime):
+                        update_item["date"] = update_item["date"].isoformat()
+                
+                formatted_issues.append(issue)
+        return formatted_issues
+
     @classmethod
     def get_all(cls):
         try:
-            info_db = []
-            response = __dbmanager__.get_all_data()
-            for info in response:
-                info_db.append(info)
-            return info_db
+            issues_from_db = list(__dbmanager__.get_all_data())
+            return cls._format_issue_data(issues_from_db)
         except Exception as ex:
-            raise Exception(ex)
+            logging.exception(ex)
+            return {"error": str(ex)}
         
     @classmethod
     def get_by_id(cls, _id):
@@ -86,7 +94,7 @@ class IssueModel:
             return __dbmanager__.get_by_id(lab_book_id)
         except ServerSelectionTimeoutError as e:
             logging.error(f"Database connection error: {e}")
-            raise   
+            raise  
     
     @staticmethod
     def update(issue_id, data):
@@ -99,7 +107,7 @@ class IssueModel:
             logging.exception(ex)
             raise Exception("Failed to update issue: " + str(ex))
         
-    @classmethod    
+    @classmethod     
     def update_data(cls,issue_id, data):
         try:
             result = __dbmanager__.update_data(issue_id, data)
@@ -111,5 +119,3 @@ class IssueModel:
         except Exception as ex:
             logging.exception(ex)
             raise Exception("Failed to update issue: " + str(ex))
-
-        
