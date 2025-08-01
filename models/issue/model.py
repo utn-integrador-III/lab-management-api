@@ -66,7 +66,7 @@ class IssueModel:
     @classmethod
     def get_all(cls):
         try:
-            issues_from_db = list(__dbmanager__.find())  # Usar find
+            issues_from_db = list(__dbmanager__.find()) 
             return cls._format_issue_data(issues_from_db)
         except Exception as ex:
             logging.exception(ex)
@@ -76,7 +76,7 @@ class IssueModel:
     def get_by_id(cls, _id):
         try:
             object_id = ObjectId(_id)
-            issue = __dbmanager__.find_one({"_id": object_id})  # Usar find_one
+            issue = __dbmanager__.find_one({"_id": object_id})  
             if issue:
                 return issue
             return None
@@ -92,7 +92,7 @@ class IssueModel:
             object_id = ObjectId(_id)
             issue = __dbmanager__.find_one({"_id": object_id})
             if issue and issue.get("status") == "Pending":
-                __dbmanager__.delete_one({"_id": object_id})  # Usar delete_one
+                __dbmanager__.delete_one({"_id": object_id}) 
                 return True
             return False
         except InvalidId:
@@ -104,7 +104,7 @@ class IssueModel:
     @staticmethod
     def find_by_id(lab_book_id):
         try:
-            return __dbmanager__.find_one({"_id": ObjectId(lab_book_id)})  # Usar find_one
+            return __dbmanager__.find_one({"_id": ObjectId(lab_book_id)})  
         except ServerSelectionTimeoutError as e:
             logging.error(f"Database connection error: {e}")
             raise  
@@ -112,7 +112,7 @@ class IssueModel:
     @staticmethod
     def update(issue_id, data):
         try:
-            result = __dbmanager__.update_one({"_id": ObjectId(issue_id)}, {"$set": data})  # Usar update_one
+            result = __dbmanager__.update_one({"_id": ObjectId(issue_id)}, {"$set": data}) 
             if result.modified_count > 0:
                 return result
             raise Exception("Failed to update issue: No changes were made.")
@@ -123,7 +123,7 @@ class IssueModel:
     @classmethod     
     def update_data(cls, issue_id, data):
         try:
-            result = __dbmanager__.update_one({"_id": ObjectId(issue_id)}, {"$set": data})  # Usar update_one
+            result = __dbmanager__.update_one({"_id": ObjectId(issue_id)}, {"$set": data}) 
             if result.modified_count > 0:
                 return result
             raise Exception("Failed to update issue: No changes were made.")
