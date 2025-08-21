@@ -166,3 +166,29 @@ class BookingModel:
         except Exception as ex:
             logging.error(f"Failed to retrieve bookings: {ex}")
             raise Exception("Failed to retrieve bookings: " + str(ex))
+        
+    @staticmethod
+    def delete_by_id(id):
+        try:
+            if not ObjectId.is_valid(id):
+                raise InvalidId(f"Invalid ObjectId: {id}")
+            
+            if __dbmanager__.collection is None:
+                logging.error("Database collection is not initialized")
+                raise Exception("Database collection is not initialized")
+            
+            logging.info(f"Attempting to delete booking with id: {id}")
+            result = __dbmanager__.collection.delete_one({"_id": ObjectId(id)})
+            logging.info(f"Delete result: deleted_count={result.deleted_count}")
+            if result.deleted_count == 0:
+                logging.info(f"No booking found with id: {id}")
+                return False
+            logging.info(f"Booking with id {id} successfully deleted")
+            return True
+        
+        except InvalidId as ex:
+            logging.error(f"Invalid ObjectId: {ex}")
+            raise
+        except Exception as ex:
+            logging.error(f"Error deleting booking with id {id}: {str(ex)}", exc_info=True)
+            raise Exception(f"Error deleting booking: {ex}")

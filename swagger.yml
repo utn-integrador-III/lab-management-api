@@ -1374,6 +1374,70 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+    delete:
+      tags:
+        - Booking
+      summary: Delete booking by ID
+      description: Delete a booking based on the provided ID.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of the booking to delete
+          required: true
+          type: string
+          format: string
+        - name: Authorization
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Booking successfully deleted
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                example: {}
+              message:
+                type: string
+                example: Booking successfully deleted
+              message_code:
+                type: string
+                example: BOOKING_SUCCESSFULLY_DELETED
+        "400":
+          description: Invalid booking ID
+          schema:
+            $ref: "#/definitions/InvalidIdErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: User Do not have the Required Permissions
+                  message_code:
+                    example: UNAUTHORIZED
+        "404":
+          description: Booking not found
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: Booking does not exist
+                  message_code:
+                    example: NO_DATA
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
 
   /professor/byemail:
     get:
