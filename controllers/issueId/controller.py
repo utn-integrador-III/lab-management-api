@@ -60,3 +60,47 @@ class IssueByIdController(Resource):
         except Exception as ex:
             logging.error(f"Error getting issue by id: {ex}")
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+        
+        """
+    Delete a issue
+    """
+    @auth_required(permission='delete', with_args=True)
+    def delete(self, id, **kwargs):
+        current_user = kwargs.get('current_user', None)
+        if current_user:
+            print(f"Current user: {current_user}")
+        else:
+            print("No user data available")
+        try:
+            if not id:
+                return ServerResponse(
+                    message='ID is required',
+                    status=StatusCode.BAD_REQUEST
+                )
+
+            deleted = IssueModel.delete_if_pending(id)
+            if deleted:
+                return ServerResponse(
+                    message='Issue successfully deleted',
+                    message_code=OK_MSG,
+                    status=StatusCode.OK
+                )
+            else:
+                return ServerResponse(
+                    message='Issue not found or status is not pending',
+                    message_code=NO_DATA,
+                    status=StatusCode.NOT_FOUND
+                )
+        except InvalidId as ex:
+            logging.error(f"Invalid ObjectId: {ex}")
+            return ServerResponse(
+                message='Invalid ID',
+                message_code=INVALID_ID,
+                status=StatusCode.BAD_REQUEST
+            )
+        except Exception as ex:
+            logging.exception(ex)
+            return ServerResponse(
+                message=f"An unexpected error occurred: {str(ex)}",
+                status=StatusCode.INTERNAL_SERVER_ERROR
+            )

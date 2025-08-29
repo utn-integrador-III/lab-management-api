@@ -1637,76 +1637,7 @@ paths:
           description: "Internal Server Error"
           schema:
             $ref: "#/definitions/InternalErrorResponse"
-    delete:
-      tags:
-        - "Issues"
-      summary: "Delete an issue"
-      description: "Delete an issue based on the provided ID."
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: Authorization
-          in: header
-          description: "An authorization header"
-          required: true
-          type: string
-        - in: body
-          name: body
-          description: "Object containing the issue ID to delete"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              _id:
-                type: "string"
-                description: "ID of the issue to delete"
-                example: "64b5d6c9c9d0a5f831c0b3e8"
-      responses:
-        "200":
-          description: "Issue successfully deleted"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-                example: "Issue successfully deleted"
-              message_code:
-                type: "string"
-                example: "ISSUE_SUCCESSFULLY_DELETED"
-        "400":
-          description: "Bad Request - Missing or invalid ID"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-                example: "ID is required"
 
-        "401":
-          description: "Unauthorized"
-          schema:
-            allOf:
-              - $ref: "#/definitions/ErrorResponse"
-              - properties:
-                  message:
-                    example: "User Do not have the Required Permissions"
-                  message_code:
-                    example: "UNAUTHORIZED"
-
-        "404":
-          description: "Not Found - Issue not found or status is not pending"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-                example: "Issue not found or status is not pending"
-        "500":
-          description: "Internal Server Error"
-          schema:
-            $ref: "#/definitions/InternalErrorResponse"
   /issue/{issueId}:
     get:
       tags:
@@ -1762,6 +1693,65 @@ paths:
                     example: "Issue not found"
                   message_code:
                     example: "NOT_FOUND"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+    delete:
+      tags:
+        - "Issues"
+      summary: "Delete an issue"
+      description: "Delete an issue based on the provided ID."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: Authorization
+          in: header
+          description: "An authorization header"
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "Issue successfully deleted"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Issue successfully deleted"
+              message_code:
+                type: "string"
+                example: "ISSUE_SUCCESSFULLY_DELETED"
+        "400":
+          description: "Bad Request - Missing or invalid ID"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "ID is required"
+
+        "401":
+          description: "Unauthorized"
+          schema:
+            allOf:
+              - $ref: "#/definitions/ErrorResponse"
+              - properties:
+                  message:
+                    example: "User Do not have the Required Permissions"
+                  message_code:
+                    example: "UNAUTHORIZED"
+
+        "404":
+          description: "Not Found - Issue not found or status is not pending"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Issue not found or status is not pending"
         "500":
           description: "Internal Server Error"
           schema:
