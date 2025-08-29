@@ -147,45 +147,6 @@ class IssueController(Resource):
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
 
-    """
-    Delete a issue 
-    """
-    @auth_required(permission='delete', with_args=True)
-    def delete(self, **kwargs):
-        current_user = kwargs.get('current_user', None)
-        if current_user:
-            # Proceed with access to current_user data
-            print(f"Current user: {current_user}")
-        else:
-            # Handle cases where current_user is not provided
-            print("No user data available")
-        try:
-            data = request.get_json()
-            _id = data.get('_id')
-
-            if not _id:
-                return ServerResponse(
-                    message='ID is required',
-                    status=StatusCode.BAD_REQUEST
-                )
-
-            deleted = IssueModel.delete_if_pending(_id)
-            if deleted:
-                return ServerResponse(
-                    message='Issue successfully deleted',
-                    message_code=ISSUE_SUCCESSFULLY_DELETED,
-                    status=StatusCode.OK
-                )
-            else:
-                return ServerResponse(
-                    message='Issue not found or status is not pending',
-                    message_code=ISSUE_NOT_FOUND,
-                    status=StatusCode.NOT_FOUND
-                )
-        except Exception as ex:
-            logging.exception(ex)
-            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
-
     @auth_required(permission='write', with_args=True)
     def put(self, **kwargs):
         current_user = kwargs.get('current_user', None)
