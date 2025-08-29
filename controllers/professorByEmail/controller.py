@@ -7,20 +7,18 @@ import logging
 from models.professor_info.model import ProfessorInfoModel
 from flask import request
 from utils.auth_manager import auth_required
+
 class ProfessorByEmailController(Resource):
-    route = "/professor/byemail"
+    route = "/professor/byemail/<string:professor_email>"
 
     @auth_required(permission='read', with_args=True)
-    def get(self, **kwargs):
+    def get(self, professor_email, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
-            # Proceed with access to current_user data
             print(f"Current user: {current_user}")
         else:
-            # Handle cases where current_user is not provided
             print("No user data available")
         try:
-            professor_email = request.args.get('professor_email')
             if not professor_email:
                 logging.error("professor_email parameter is required")
                 return ServerResponse(
@@ -43,4 +41,8 @@ class ProfessorByEmailController(Resource):
             return ServerResponse(data=response, status=StatusCode.OK)
         except Exception as ex:
             logging.exception("Internal server error")
-            return ServerResponse(message="Internal server error",message_code=INTERNAL_SERVER_ERROR_MSG, status=StatusCode.INTERNAL_SERVER_ERROR)
+            return ServerResponse(
+                message="Internal server error",
+                message_code=INTERNAL_SERVER_ERROR_MSG,
+                status=StatusCode.INTERNAL_SERVER_ERROR
+            )

@@ -41,9 +41,10 @@ class Connection:
     def get_by_query(self, query):
         try:
             result = self.collection.find(query)
+            return result
         except Exception as e:
+            logging.error(f"Database error in get_by_query: {e}")
             raise Exception(e)
-        return result
 
     def create_data(self, data):
         try:
@@ -73,4 +74,13 @@ class Connection:
             else:
                 return False
         except Exception as e:
+            raise Exception(e)
+        
+
+    def get_by_query(self, query):
+        try:
+            result = self.collection.find(query)
+            return list(result)
+        except Exception as e:
+            logging.exception(e)
             raise Exception(e)

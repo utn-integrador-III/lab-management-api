@@ -32,7 +32,7 @@ class BookingComputerController(Resource):
     route = "/booking/computer"
 
     @auth_required(permission='delete', with_args=True)
-    def delete(self, id, **kwargs):
+    def delete(self, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
             # Proceed with access to current_user data
@@ -45,7 +45,7 @@ class BookingComputerController(Resource):
             data = request.get_json()
             logging.info(f"Datos recibidos: {data}")
 
-            lab_id = data.get('id')
+            lab_id = data.get('lab_book_id')
             student_email = data.get('student_email')
             computer = data.get('computer')
 
@@ -87,12 +87,14 @@ class BookingComputerController(Resource):
             )
         
         
-    @auth_required(permission='create', with_args=True)
-    def post(self):
+    @auth_required(permission='write', with_args=True)
+    def post(self, **kwargs):
+        current_user = kwargs.get('current_user')
+        logging.info(f"Current user inside post: {current_user}")
         try:
             update_data = request.get_json()
             logging.info(f"Received update data: {update_data}")
-
+    
             if not update_data or not isinstance(update_data, dict):
                 return ServerResponse(
                     message="No valid data provided for update",

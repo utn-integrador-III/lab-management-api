@@ -17,42 +17,43 @@ class IssueController(Resource):
     @auth_required(permission='read', with_args=True)
     def get(self, **kwargs):
         current_user = kwargs.get('current_user', None)
-        if current_user:
-            # Proceed with access to current_user data
-            print(f"Current user: {current_user}")
-        else:
-            # Handle cases where current_user is not provided
-            print("No user data available")
+
+        if not current_user:
+            return ServerResponse(
+                data={},
+                message="Unauthorized",
+                status=StatusCode.UNAUTHORIZED,
+            )
+
         try:
-            Issues = IssueModel.get_all()
-            if isinstance(Issues, dict) and "error" in Issues:
+            issues = IssueModel.get_all()
+
+            # Verificamos si el modelo devolvió un error
+            if isinstance(issues, dict) and "error" in issues:
                 return ServerResponse(
                     data={},
-                    message=Issues["error"],
+                    message=issues["error"],
                     status=StatusCode.INTERNAL_SERVER_ERROR,
                 )
 
-            if not Issues:
+            if not issues:
                 return ServerResponse(
-                    data={},
+                    data=[],
                     message="No Issues found",
                     message_codes=NO_DATA,
                     status=StatusCode.OK,
                 )
+            
+            # El modelo ya nos devuelve los datos formateados
+            return ServerResponse(data=issues, status=StatusCode.OK)
 
-            # Convert ObjectId and datetime to string
-            for issue in Issues:
-                issue["_id"] = str(issue["_id"])
-                if isinstance(issue["date_issue"], datetime):
-                    issue["date_issue"] = issue["date_issue"].isoformat()
-                for update_item in issue.get("update", []):
-                    if isinstance(update_item, dict) and isinstance(update_item.get("date"), datetime):
-                        update_item["date"] = update_item["date"].isoformat()
-
-            return ServerResponse(data=Issues, status=StatusCode.OK)
         except Exception as ex:
             logging.exception(ex)
-            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
+            return ServerResponse(
+                data={},
+                message=f"An unexpected error occurred: {str(ex)}",
+                status=StatusCode.INTERNAL_SERVER_ERROR,
+            )
 
     """
     Create a new issue 
@@ -142,45 +143,6 @@ class IssueController(Resource):
             lab_issue = IssueModel.create(data)
             return ServerResponse(lab_issue.to_dict(), message="Issue successfully created", 
                                   message_code=ISSUE_SUCCESSFULLY_CREATED, status=StatusCode.CREATED)
-        except Exception as ex:
-            logging.exception(ex)
-            return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)
-
-    """
-    Delete a issue 
-    """
-    @auth_required(permission='delete', with_args=True)
-    def delete(self, **kwargs):
-        current_user = kwargs.get('current_user', None)
-        if current_user:
-            # Proceed with access to current_user data
-            print(f"Current user: {current_user}")
-        else:
-            # Handle cases where current_user is not provided
-            print("No user data available")
-        try:
-            data = request.get_json()
-            _id = data.get('_id')
-
-            if not _id:
-                return ServerResponse(
-                    message='ID is required',
-                    status=StatusCode.BAD_REQUEST
-                )
-
-            deleted = IssueModel.delete_if_pending(_id)
-            if deleted:
-                return ServerResponse(
-                    message='Issue successfully deleted',
-                    message_code=ISSUE_SUCCESSFULLY_DELETED,
-                    status=StatusCode.OK
-                )
-            else:
-                return ServerResponse(
-                    message='Issue not found or status is not pending',
-                    message_code=ISSUE_NOT_FOUND,
-                    status=StatusCode.NOT_FOUND
-                )
         except Exception as ex:
             logging.exception(ex)
             return ServerResponse(status=StatusCode.INTERNAL_SERVER_ERROR)

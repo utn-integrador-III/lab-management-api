@@ -10,7 +10,7 @@ class ProfessorInfoController(Resource):
 
     route = "/professor"
 
-    @auth_required(permission='update', with_args=True)
+    @auth_required(permission='read', with_args=True)
     def get(self, **kwargs):
         current_user = kwargs.get('current_user', None)
         if current_user:
